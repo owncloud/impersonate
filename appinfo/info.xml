@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<info>
+    <id>impersonate</id>
+    <name>Impersonate</name>
+    <description>Allows an admin to become another user.</description>
+    <licence>agpl</licence>
+    <author>Jörn Friedrich Dreyer</author>
+    <version>0.0.1</version>
+    <requiremin>7.0.0</requiremin>
+</info>
