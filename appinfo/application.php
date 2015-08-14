@@ -11,14 +11,11 @@
 
 namespace OCA\Impersonate\AppInfo;
 
-
-use \OCP\AppFramework\App;
-
-use \OCA\Impersonate\Controller\SettingsController;
+use OCP\AppFramework\App;
+use OCA\Impersonate\Controller\SettingsController;
 
 
 class Application extends App {
-
 
 	public function __construct (array $urlParams=array()) {
 		parent::__construct('impersonate', $urlParams);
@@ -36,7 +33,6 @@ class Application extends App {
 				$c->query('OCP\IUserSession')
 			);
 		});
-
 
 	}
 

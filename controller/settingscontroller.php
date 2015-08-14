@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /**
  * ownCloud - impersonate
  *
@@ -11,22 +11,18 @@
 
 namespace OCA\Impersonate\Controller;
 
-
 use OCP\AppFramework\Http\JSONResponse;
-use \OCP\IRequest;
-use \OCP\AppFramework\Controller;
+use OCP\IRequest;
+use OCP\AppFramework\Controller;
 use OCP\IUserManager;
 use OCP\IUserSession;
 
+
 class SettingsController extends Controller {
 
-	/**
-	 * @var IUserManager
-	 */
+	/** @var IUserManager */
 	private $userManager;
-	/**
-	 * @var IUserSession
-	 */
+	/** @var IUserSession */
 	private $userSession;
 
 	public function __construct($appName, IRequest $request, IUserManager $userManager, IUserSession $userSession) {
@@ -49,5 +45,6 @@ class SettingsController extends Controller {
 		}
 		return new JSONResponse();
 	}
+
 }
 

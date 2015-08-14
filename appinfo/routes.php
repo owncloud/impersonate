@@ -22,5 +22,5 @@ namespace OCA\Impersonate\AppInfo;
 $application = new Application();
 
 $application->registerRoutes($this, array('routes' => array(
-    array('name' => 'settings#impersonate', 'url' => '/user', 'verb' => 'POST'),
+	array('name' => 'settings#impersonate', 'url' => '/user', 'verb' => 'POST'),
 )));

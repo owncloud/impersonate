@@ -10,4 +10,4 @@
  */
 
 // --- register settings -----------------------------------------------
-\OCP\App::registerAdmin('impersonate', 'settings-admin');
+\OCP\App::registerAdmin('impersonate', 'settings/admin');
