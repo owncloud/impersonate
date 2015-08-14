@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 /**
  * ownCloud - impersonate
  *
@@ -20,32 +20,34 @@ use OCP\IUserSession;
 
 class SettingsController extends Controller {
 
-    /**
-     * @var IUserManager
-     */
-    private $userManager;
-    /**
-     * @var IUserSession
-     */
-    private $userSession;
+	/**
+	 * @var IUserManager
+	 */
+	private $userManager;
+	/**
+	 * @var IUserSession
+	 */
+	private $userSession;
 
-    public function __construct($appName, IRequest $request, IUserManager $userManager, IUserSession $userSession){
-        parent::__construct($appName, $request);
-        $this->userManager = $userManager;
-        $this->userSession = $userSession;
-    }
+	public function __construct($appName, IRequest $request, IUserManager $userManager, IUserSession $userSession) {
+		parent::__construct($appName, $request);
+		$this->userManager = $userManager;
+		$this->userSession = $userSession;
+	}
 
-
-
-    /**
-     * become another user
-     * @UseSession
-     */
-    public function impersonate($userid) {
-        $user = $this->userManager->get($userid);
-        $this->userSession->setUser($user);
-        return new JSONResponse();
-    }
-
-
+	/**
+	 * become another user
+	 * @UseSession
+	 */
+	public function impersonate($userid) {
+		$users = $this->userManager->search($userid, 1, 0);
+		if (count($users) > 0) {
+			$user = array_shift($users);
+			if (strcasecmp($user->getUID(),$userid) === 0) {
+				$this->userSession->setUser($user);
+			}
+		}
+		return new JSONResponse();
+	}
 }
+
