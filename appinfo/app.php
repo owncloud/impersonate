@@ -9,5 +9,9 @@
  * @copyright Jörn Friedrich Dreyer 2015
  */
 
-// --- register settings -----------------------------------------------
-\OCP\App::registerAdmin('impersonate', 'settings/admin');
+// --- register js for user management------------------------------------------
+if ($user = \OC::$server->getUserSession()->getUser()) {
+	if (\OC::$server->getGroupManager()->isAdmin($user->getUID())) {
+		\OCP\Util::addScript('impersonate', 'impersonate');
+	}
+}
