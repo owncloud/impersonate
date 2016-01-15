@@ -5,6 +5,8 @@
     <description>Allows an admin to become another user.</description>
     <licence>agpl</licence>
     <author>Jörn Friedrich Dreyer</author>
-    <version>0.0.1</version>
-    <requiremin>7.0.0</requiremin>
+    <version>0.0.3</version>
+    <dependencies>
+        <owncloud min-version="9.0"/>
+    </dependencies>
 </info>

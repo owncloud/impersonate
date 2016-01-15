@@ -10,8 +10,10 @@
  */
 
 // --- register js for user management------------------------------------------
-if ($user = \OC::$server->getUserSession()->getUser()) {
-	if (\OC::$server->getGroupManager()->isAdmin($user->getUID())) {
+$eventDispatcher = \OC::$server->getEventDispatcher();
+$eventDispatcher->addListener(
+	'OC\Settings\Users::loadAdditionalScripts',
+	function() {
 		\OCP\Util::addScript('impersonate', 'impersonate');
 	}
-}
+);
