@@ -10,8 +10,6 @@
  */
 
 // --- register js for user management------------------------------------------
-if ($user = \OC::$server->getUserSession()->getUser()) {
-	if (\OC::$server->getGroupManager()->isAdmin($user->getUID())) {
-		\OCP\Util::addScript('impersonate', 'impersonate');
-	}
+if (OC_User::isAdminUser(OC_User::getUser())) {
+	\OCP\Util::addScript('impersonate', 'impersonate');
 }
