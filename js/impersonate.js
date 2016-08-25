@@ -16,12 +16,12 @@
 		$('<th>&nbsp;</th>').insertAfter('#userlist #headerName');
 		$('<td><a class="action permanent impersonate" href="#" title="' +
 			t('impersonate', 'Impersonate') + '">' +
-			'<img class="svg permanent action" src="/core/img/actions/user.svg" />' +
+			'<img class="svg permanent action" src="' + OC.imagePath('core','actions/user.svg') + '" />' +
 			'</a></td>')
 			.insertAfter('#userlist .name');
 
-		$('#userlist').on('click', '.impersonate', function(e) {
-			var userid = $(e.srcElement).parents('tr').find('.name').text();
+		$('#userlist').on('click', '.impersonate', function() {
+			var userid = $(this).parents('tr').find('.name').text();
 			OCdialogs.confirm(
 				t('impersonate', 'With great power comes great responsibility!'),
 				t('impersonate', 'Are you sure you want to impersonate {userid}?',
