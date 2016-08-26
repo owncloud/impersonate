@@ -13,9 +13,9 @@ namespace OCA\Impersonate\Tests\Controller;
 
 use OCA\Impersonate\Controller\SettingsController;
 use OCP\AppFramework\Http\JSONResponse;
+use OCP\ILogger;
 use OCP\IUserManager;
 use OCP\IUserSession;
-use OCP\User;
 use Test\TestCase;
 
 class SettingsControllerTest extends TestCase {
@@ -26,6 +26,8 @@ class SettingsControllerTest extends TestCase {
 	private $userSession;
 	/** @var SettingsController */
 	private $controller;
+	/** @var ILogger */
+	private $logger;
 
 	public function setUp() {
 		$request = $this->getMockBuilder(
@@ -40,12 +42,17 @@ class SettingsControllerTest extends TestCase {
 			'\OCP\IUserSession')
 			->disableOriginalConstructor()
 			->getMock();
+		$this->logger = $this->getMockBuilder(
+			'\OCP\ILogger')
+			->disableOriginalConstructor()
+			->getMock();
 
 		$this->controller = new SettingsController(
 			'impersonate',
 			$request,
 			$this->userManager,
-			$this->userSession
+			$this->userSession,
+			$this->logger
 		);
 	}
 
