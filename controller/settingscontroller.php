@@ -11,6 +11,7 @@
 
 namespace OCA\Impersonate\Controller;
 
+use OCP\AppFramework\Http;
 use OCP\AppFramework\Http\JSONResponse;
 use OCP\ILogger;
 use OCP\IRequest;
@@ -46,14 +47,12 @@ class SettingsController extends Controller {
 		$oldUserId = $this->userSession->getUser()->getUID();
 		$this->logger->warning("User $oldUserId trying to impersonate user $userid", ['app' => 'impersonate']);
 
-		$users = $this->userManager->search($userid, 1, 0);
-		if (count($users) > 0) {
-			/** @var IUser $user */
-			$user = array_shift($users);
-			if (strcasecmp($user->getUID(), $userid) === 0) {
-				$this->logger->warning("changing to user $userid", ['app' => 'impersonate']);
-				$this->userSession->setUser($user);
-			}
+		$user = $this->userManager->get($userid);
+		if ($user === null) {
+			return new JSONResponse("No user found for $userid", Http::STATUS_NOT_FOUND);
+		} else {
+			$this->logger->warning("changing to user $userid", ['app' => 'impersonate']);
+			$this->userSession->setUser($user);
 		}
 		return new JSONResponse();
 	}
