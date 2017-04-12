@@ -45,9 +45,11 @@ class SettingsController extends Controller {
 	 */
 	public function impersonate($userid) {
 		$oldUserId = $this->userSession->getUser()->getUID();
+		\OC::$server->getSession()->set('oldUserId',$oldUserId);
 		$this->logger->warning("User $oldUserId trying to impersonate user $userid", ['app' => 'impersonate']);
 
 		$user = $this->userManager->get($userid);
+		\OC::$server->getSession()->set('newUserId',$userid);
 		if ($user === null) {
 			return new JSONResponse("No user found for $userid", Http::STATUS_NOT_FOUND);
 		} else {
@@ -56,6 +58,5 @@ class SettingsController extends Controller {
 		}
 		return new JSONResponse();
 	}
-
 }
 
