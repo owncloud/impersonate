@@ -9,6 +9,10 @@
  * @copyright Jörn Friedrich Dreyer 2015
  */
 
+\OCP\App::registerAdmin('impersonate', 'settings-admin');
+if(\OC::$server->getSession()->get('oldUserId') !== null) {
+	\OCP\Util::addScript('impersonate','impersonate_logout');
+}
 // --- register js for user management------------------------------------------
 $eventDispatcher = \OC::$server->getEventDispatcher();
 $eventDispatcher->addListener(
@@ -17,3 +21,4 @@ $eventDispatcher->addListener(
 		\OCP\Util::addScript('impersonate', 'impersonate');
 	}
 );
+
