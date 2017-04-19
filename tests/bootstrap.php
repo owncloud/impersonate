@@ -11,16 +11,17 @@
  * along with this program. If not, see <https://owncloud.com/licenses/owncloud-commercial/>.
  *
  */
-
-global $RUNTIME_NOAPPS;
-$RUNTIME_NOAPPS = true;
-
-define('PHPUNIT_RUN', 1);
+if (!defined('PHPUNIT_RUN')) {
+	define('PHPUNIT_RUN', 1);
+}
 
 require_once __DIR__.'/../../../lib/base.php';
+
+\OC::$composerAutoloader->addPsr4('Test\\', OC::$SERVERROOT . '/tests/lib/', true);
 
 if(!class_exists('PHPUnit_Framework_TestCase')) {
 	require_once('PHPUnit/Autoload.php');
 }
 
+\OC_App::loadApp('impersonate');
 OC_Hook::clear();
