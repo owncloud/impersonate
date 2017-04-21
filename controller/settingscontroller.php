@@ -11,8 +11,10 @@
 
 namespace OCA\Impersonate\Controller;
 
+use OC\Group\Manager;
 use OCP\AppFramework\Http;
 use OCP\AppFramework\Http\JSONResponse;
+use OCP\IGroupManager;
 use OCP\ILogger;
 use OCP\IRequest;
 use OCP\AppFramework\Controller;
@@ -30,6 +32,15 @@ class SettingsController extends Controller {
 	/** @var ILogger */
 	private $logger;
 
+	/**
+	 * SettingsController constructor.
+	 *
+	 * @param string $appName
+	 * @param IRequest $request
+	 * @param IUserManager $userManager
+	 * @param IUserSession $userSession
+	 * @param ILogger $logger
+	 */
 	public function __construct($appName, IRequest $request, IUserManager $userManager, IUserSession $userSession, ILogger $logger) {
 		parent::__construct($appName, $request);
 		$this->userManager = $userManager;
@@ -38,18 +49,35 @@ class SettingsController extends Controller {
 	}
 
 	/**
+	 *  Get the data for Impersonate app
+	 *  @NoAdminRequired
+	 *
+	 *  @return JSONResponse
+	 */
+	public function getDataForImpersonateApp() {
+		$isEnabled = \OC::$server->getAppConfig()->getValue('impersonate','impersonate_include_groups',false);
+		$includedGroups = \OC::$server->getAppConfig()->getValue('impersonate','impersonate_include_groups_list',"[]");
+		return new JSONResponse([$includedGroups, $isEnabled,
+			\OC::$server->getGroupManager()->isAdmin($this->userSession->getUser()->getUID()),
+			\OC::$server->getGroupManager()->getSubAdmin()->isSubAdmin($this->userSession->getUser())]);
+	}
+
+	/**
 	 * become another user
 	 * @param string $userid
 	 * @UseSession
+	 * @NoAdminRequired
+	 * @NoSubadminRequired
 	 * @return JSONResponse
 	 */
 	public function impersonate($userid) {
 		$oldUserId = $this->userSession->getUser()->getUID();
-		\OC::$server->getSession()->set('oldUserId',$oldUserId);
+		if(\OC::$server->getSession()->get('oldUserId') === null) {
+			\OC::$server->getSession()->set('oldUserId', $oldUserId);
+		}
 		$this->logger->warning("User $oldUserId trying to impersonate user $userid", ['app' => 'impersonate']);
 
 		$user = $this->userManager->get($userid);
-		\OC::$server->getSession()->set('newUserId',$userid);
 		if ($user === null) {
 			return new JSONResponse("No user found for $userid", Http::STATUS_NOT_FOUND);
 		} else {

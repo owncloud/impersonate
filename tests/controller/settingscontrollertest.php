@@ -13,13 +13,24 @@ namespace OCA\Impersonate\Tests\Controller;
 
 use OCA\Impersonate\Controller\SettingsController;
 use OCP\AppFramework\Http\JSONResponse;
+use OCP\AppFramework\Http;
+use OCP\IRequest;
 use OCP\ILogger;
 use OCP\IUserManager;
 use OCP\IUserSession;
 use Test\TestCase;
 
+/**
+ * Class SettingsControllerTest
+ * @group DB
+ */
+
 class SettingsControllerTest extends TestCase {
 
+	/** @var string */
+	private $appName;
+	/** @var IRequest */
+	private $request;
 	/** @var IUserManager */
 	private $userManager;
 	/** @var IUserSession */
@@ -30,7 +41,8 @@ class SettingsControllerTest extends TestCase {
 	private $logger;
 
 	public function setUp() {
-		$request = $this->getMockBuilder(
+		$this->appName = 'impersonate';
+		$this->request = $this->getMockBuilder(
 			'\OCP\IRequest')
 			->disableOriginalConstructor()
 			->getMock();
@@ -48,25 +60,29 @@ class SettingsControllerTest extends TestCase {
 			->getMock();
 
 		$this->controller = new SettingsController(
-			'impersonate',
-			$request,
+			$this->appName,
+			$this->request,
 			$this->userManager,
 			$this->userSession,
 			$this->logger
 		);
+
+		parent::setUp();
 	}
 
 	public function testImpersonateNotFound() {
-		$this->userManager->expects($this->once())
-			->method('search')
-			->with('notexisting@uid', 1, 0)
-			->will($this->returnValue([]));
+		$user = $this->createMock('OCP\IUser');
+		$user->method('getUID')
+			->willReturn('admin');
+		$this->userSession
+			->method('getUser')
+			->willReturn($user);
 
 		$this->userSession->expects($this->never())
 			->method('setUser');
 
 		$this->assertEquals(
-			new JSONResponse(),
+			new JSONResponse('No user found for notexisting@uid', Http::STATUS_NOT_FOUND),
 			$this->controller->impersonate('notexisting@uid')
 		);
 	}
@@ -83,15 +99,70 @@ class SettingsControllerTest extends TestCase {
 	 * @param $uid
 	 */
 	public function testImpersonate($query, $uid) {
-		$user = $this->getMock('\OCP\IUser');
-		$user->expects($this->once())
-			->method('getUID')
-			->will($this->returnValue($uid));
+		$user = $this->createMock('\OCP\IUser');
+		$user->method('getUID')
+			->willReturn($uid);
+
+		$this->userSession
+			->method('getUser')
+			->willReturn($user);
 
 		$this->userManager->expects($this->once())
-			->method('search')
-			->with($query, 1, 0)
-			->will($this->returnValue([$user]));
+			->method('get')
+			->with($query)
+			->willReturn($user);
+
+		$this->userSession->expects($this->once())
+			->method('setUser')
+			->with($user);
+
+		$this->assertEquals(
+			new JSONResponse(),
+			$this->controller->impersonate($query)
+		);
+	}
+
+	public function normalUsers() {
+		return [
+			['username', 'username'],
+			['UserName', 'username']
+		];
+	}
+
+	/**
+	 * @dataProvider normalUsers
+	 * @param $query
+	 */
+
+	public function testAdminImpersonateNormalUsers($query,$uid) {
+		$loggedInUser = $this->createMock('OCP\IUser');
+		$loggedInUser
+			->expects($this->once())
+			->method('getUID')
+			->willReturn('admin');
+
+		$this->userSession
+			->expects($this->once())
+			->method('getUser')
+			->willReturn($loggedInUser);
+
+		$userManager = $this->getMockBuilder('OC\User\Manager')
+			->disableOriginalConstructor()
+			->getMock();
+
+		$userManager->expects($this->any())
+			->method('createUser')
+			->with($query,'123');
+
+		$user = $this->createMock('\OCP\IUser');
+		$user->expects($this->any())
+			->method('getUID')
+			->willReturn($uid);
+
+		$this->userManager->expects($this->once())
+			->method('get')
+			->with($query)
+			->willReturn($user);
 
 		$this->userSession->expects($this->once())
 			->method('setUser')

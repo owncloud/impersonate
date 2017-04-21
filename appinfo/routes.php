@@ -36,6 +36,14 @@ $application->registerRoutes(
 				'url' => '/logout',
 				'verb' => 'POST',
 			],
+
+			//Get the data to validate for the app
+			[
+				'name' => 'Settings#getDataForImpersonateApp',
+				'url' => '/getimpersonatedata',
+				'verb' => 'GET',
+			]
+
 		],
 	]
 );
