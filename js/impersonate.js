@@ -83,7 +83,11 @@
 			).done(function( result ) {
 				OC.redirect(OC.generateUrl('apps/files'));
 			}).fail(function( result ) {
-				OC.dialogs.alert(result.responseJSON.message, t('impersonate', 'Could not impersonate user'));
+				if((result.responseJSON.error === "userNeverLoggedIn") && (result.responseJSON.message.length > 0)) {
+					OC.dialogs.alert(t('impersonate', result.responseJSON.message),t('impersonate', "Error"));
+				} else if((result.responseJSON.error === "userNotFound") && (result.responseJSON.message.length > 0)){
+					OC.dialogs.alert(t('impersonate', result.responseJSON.message), t('impersonate', "Error"));
+				}
 			});
 		}
 

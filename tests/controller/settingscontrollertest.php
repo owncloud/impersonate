@@ -82,7 +82,10 @@ class SettingsControllerTest extends TestCase {
 			->method('setUser');
 
 		$this->assertEquals(
-			new JSONResponse('No user found for notexisting@uid', Http::STATUS_NOT_FOUND),
+			new JSONResponse([
+				'error' => 'userNotFound',
+				'message' => "No user found for notexisting@uid"
+			], Http::STATUS_NOT_FOUND),
 			$this->controller->impersonate('notexisting@uid')
 		);
 	}
@@ -107,10 +110,14 @@ class SettingsControllerTest extends TestCase {
 			->method('getUser')
 			->willReturn($user);
 
-		$this->userManager->expects($this->once())
+		$this->userManager->expects($this->at(0))
 			->method('get')
 			->with($query)
 			->willReturn($user);
+
+		$user->expects($this->once())
+			->method('getLastLogin')
+			->willReturn(1);
 
 		$this->userSession->expects($this->once())
 			->method('setUser')
@@ -159,7 +166,7 @@ class SettingsControllerTest extends TestCase {
 			->method('getUID')
 			->willReturn($uid);
 
-		$this->userManager->expects($this->once())
+		$this->userManager->expects($this->at(0))
 			->method('get')
 			->with($query)
 			->willReturn($user);
@@ -168,10 +175,53 @@ class SettingsControllerTest extends TestCase {
 			->method('setUser')
 			->with($user);
 
+		$user->expects($this->once())
+			->method('getLastLogin')
+			->willReturn(1);
+
 		$this->assertEquals(
 			new JSONResponse(),
 			$this->controller->impersonate($query)
 		);
 	}
 
+	public function neverLoggedIn() {
+		return [
+			['UserName', 'username']
+		];
+	}
+
+	/**
+	 * @dataProvider neverLoggedIn
+	 * @param $query
+	 * @param $uid
+	 */
+
+	public function testImpersonateNeverLoggedInUser($query, $uid) {
+		$user = $this->createMock('\OCP\IUser');
+		$user->method('getUID')
+			->willReturn($uid);
+
+		$this->userSession
+			->method('getUser')
+			->willReturn($user);
+
+		$this->userManager->expects($this->at(0))
+			->method('get')
+			->with($query)
+			->willReturn($user);
+
+		$user->expects($this->once())
+			->method('getLastLogin')
+			->willReturn(0);
+
+		$this->assertEquals(
+			new JSONResponse(['error' => "userNeverLoggedIn",
+				'message' => "Cannot impersonate user " . '"' . $query . '"' . " who hasn't logged in yet."
+			], http::STATUS_NOT_FOUND),
+			$this->controller->impersonate($query)
+		);
+	}
+
 }
+
