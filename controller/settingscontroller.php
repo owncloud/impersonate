@@ -75,22 +75,23 @@ class SettingsController extends Controller {
 		if(\OC::$server->getSession()->get('oldUserId') === null) {
 			\OC::$server->getSession()->set('oldUserId', $oldUserId);
 		}
-		$this->logger->warning("User $oldUserId trying to impersonate user $userid", ['app' => 'impersonate']);
 
 		$user = $this->userManager->get($userid);
 		if ($user === null) {
+			$this->logger->info("User $userid doesn't exist. User $oldUserId cannot impersonate $userid");
 			return new JSONResponse([
 				'error' => 'userNotFound',
 				'message' => "No user found for $userid"
 			], Http::STATUS_NOT_FOUND);
-		} elseif ($this->userManager->get($userid)->getLastLogin() === 0) {
+		} elseif ($user->getLastLogin() === 0) {
 			// It's a first time login
+			$this->logger->info("User $userid did not logged in yet. User $oldUserId cannot impersonate $userid");
 			return new JSONResponse([
 				'error' => "userNeverLoggedIn",
 				'message' => "Cannot impersonate user " . '"' . $userid . '"' . " who hasn't logged in yet.",
 			], http::STATUS_NOT_FOUND);
 		} else {
-			$this->logger->warning("changing to user $userid", ['app' => 'impersonate']);
+			$this->logger->info("User $oldUserId impersonated user $userid", ['app' => 'impersonate']);
 			$this->userSession->setUser($user);
 		}
 		return new JSONResponse();
