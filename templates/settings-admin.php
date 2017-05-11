@@ -5,7 +5,7 @@
 	<p class="<?php if (\OC::$server->getAppConfig()->getValue('impersonate', 'enabled','no') === 'no') p('hidden');?>">
 		<input type="checkbox" name="impersonate_include_groups" id="impersonateIncludeGroups" class="checkbox"
 			value="1" <?php if (\OC::$server->getAppConfig()->getValue('impersonate', 'impersonate_include_groups','false') !== 'false') print_unescaped('checked="checked"'); ?> />
-		<label for="impersonateIncludeGroups"><?php p($l->t('Allow subadmins to impersonate users from these groups'));?></label><br/>
+		<label for="impersonateIncludeGroups"><?php p($l->t('Allow group admins to impersonate users from these groups'));?></label><br/>
 	</p>
 	<p id="selectIncludedGroups" class="indent <?php if (\OC::$server->getAppConfig()->getValue('impersonate', 'impersonate_include_groups','false') === 'false') p('hidden'); ?>">
 		<input name="impersonate_include_groups_list" type="hidden" id="includedGroups" value="<?php
@@ -15,7 +15,6 @@
 		p($listToPrint);
 		?>" style="width: 400px"/>
 		<br />
-		<em><?php p($l->t('These groups will be able to impersonate.')); ?></em>
 	</p>
 
 </div>
