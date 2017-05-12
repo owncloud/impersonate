@@ -1,0 +1,20 @@
+#impersonate-notification {
+	display: inline-block;
+	background-color: #fc4;
+	margin: 0 auto;
+	max-width: 60%;
+	z-index: 8000;
+	border: 0;
+	padding: 1px 8px;
+	position: relative;
+	top: 0;
+	border-bottom-left-radius: 3px;
+	border-bottom-right-radius: 3px;
+	opacity: .9;
+	margin-right: 2px;
+	vertical-align: top;
+}
+
+#notification {
+	margin-left: 2px;
+}
