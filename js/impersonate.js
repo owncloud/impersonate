@@ -12,7 +12,7 @@
 			t('impersonate', 'Impersonate') + '">' +
 			'<img class="svg permanent action" src="' + OC.imagePath('core', 'actions/user.svg') + '" />' +
 			'</a></td>';
-		$(addImpersonate).insertAfter($localtr.find('.name'));
+			$(addImpersonate).insertAfter($localtr.find('.name'));
 	}
 
 	function removeImpersonateIcon ($localtr) {
@@ -43,12 +43,18 @@
 					if (!$tr) {
 						return;
 					}
+
+					//Clean up of impersonation
+					$tr.find('.impersonate').parent().remove();
+					$tr.find('.impersonateDisabled').remove();
+
 					var groupsSelectedByUser = $tr.find('.groups').data('groups');
 
 					if ($tr.data('uid') === $.trim(currentUser)) {
 						removeImpersonateIcon($tr);
 					} else if (adminUser) {
 						addImpersonateIcon($tr);
+
 					} else if (subadminUser) {
 						var found = false;
 						if(groupEnabled) {
@@ -70,7 +76,6 @@
 					return $tr;
 				});
 			};
-
 		}
 	});
 
