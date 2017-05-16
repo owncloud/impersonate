@@ -2,22 +2,42 @@ $(document).ready(function () {
 
 	$("#logout").attr("href","#");
 
-	var text = t(
-		'core',
-		'<a href="{docUrl}">{displayText}</a>',
-		{
-			docUrl: OC.generateUrl('apps/files'),
-			displayText: "Logged in as " + OC.getCurrentUser().uid,
-		}
-	);
+	var TEMPLATE_BASE =
+		'<div id="impersonate-notification" ' +
+		'<div class="row">' +
+		'<a href="{{docUrl}}" style="text-align: center;">{{displayText}}</a>' +
+		'</div>' +
+		'</div>';
 
-	var timeout = 15;
-	OC.Notification.showHtml(
-		text,
-		{
-			isHTML: true, timeout
-		}
-	);
+	var ImpersonateNotification = {
+		/** @type {Object} **/
+		_templates: {},
+
+		render: function () {
+			var baseTemplate = this._getTemplate('base', TEMPLATE_BASE);
+			return baseTemplate({
+				docUrl: OC.generateUrl('apps/files'),
+				displayText: t('core','Logged in as {currentUser}', {'currentUser': OC.getCurrentUser().uid})
+			});
+		},
+
+		/**
+		 *
+		 * @param {string} key - an identifier for the template
+		 * @param {string} template - the HTML to be compiled by Handlebars
+		 * @returns {Function} from Handlebars
+		 * @private
+		 */
+		_getTemplate: function (key, template) {
+			if (!this._templates[key]) {
+				this._templates[key] = Handlebars.compile(template);
+			}
+			return this._templates[key];
+		},
+	};
+
+	var $templateImpersonate = ImpersonateNotification.render();
+	$($templateImpersonate).insertBefore("#notification");
 
 	function logoutHandler(userid) {
 		var promisObj = $.post(
