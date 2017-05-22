@@ -1,0 +1,8 @@
+{ "translations": {
+    "Impersonate" : "להתחזות",
+    "Error" : "שגיאה",
+    "Logged in as {currentUser}" : "התחבר כ- {currentUser}",
+    "Impersonate Settings" : "הגדרות התחזות",
+    "Allow group admins to impersonate users from these groups" : "מאפשר למנהלי קבוצות להתחזות למשתמשים של קבוצות אלו"
+},"pluralForm" :"nplurals=2; plural=(n != 1);"
+}
