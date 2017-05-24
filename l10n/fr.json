@@ -1,8 +1,8 @@
 { "translations": {
-    "Impersonate" : "Imiter",
+    "Impersonate" : "Incarner",
     "Error" : "Erreur",
     "Logged in as {currentUser}" : "Connecté en tant que {currentUser}",
-    "Impersonate Settings" : "Paramètres d'imitation",
-    "Allow group admins to impersonate users from these groups" : "Autoriser les administrateurs de groupes à imiter des utilisateurs de ces groupes"
+    "Impersonate Settings" : " Paramètres d'incarnation",
+    "Allow group admins to impersonate users from these groups" : "Autoriser les administrateurs d'un groupe à incarner ses utilisateurs"
 },"pluralForm" :"nplurals=2; plural=(n > 1);"
 }
