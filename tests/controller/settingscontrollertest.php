@@ -11,13 +11,18 @@
 
 namespace OCA\Impersonate\Tests\Controller;
 
+use OC\SubAdmin;
 use OCA\Impersonate\Controller\SettingsController;
 use OCP\AppFramework\Http\JSONResponse;
 use OCP\AppFramework\Http;
+use OCP\IAppConfig;
+use OCP\IGroupManager;
 use OCP\IRequest;
 use OCP\ILogger;
 use OCP\IUserManager;
 use OCP\IUserSession;
+use OCP\ISession;
+use OC\Group\Backend;
 use Test\TestCase;
 
 /**
@@ -39,6 +44,14 @@ class SettingsControllerTest extends TestCase {
 	private $controller;
 	/** @var ILogger */
 	private $logger;
+	/** @var  IGroupManager */
+	private $groupManger;
+	/** @var  SubAdmin */
+	private $subAdmin;
+	/** @var  ISession */
+	private $session;
+	/** @var IAppConfig  */
+	private $config;
 
 	public function setUp() {
 		$this->appName = 'impersonate';
@@ -58,13 +71,26 @@ class SettingsControllerTest extends TestCase {
 			'\OCP\ILogger')
 			->disableOriginalConstructor()
 			->getMock();
+		$this->groupManger = $this->getMockBuilder(IGroupManager::class)
+			->getMock();
+		$this->subAdmin  = $this->getMockBuilder(SubAdmin::class)
+			->disableOriginalConstructor()
+			->getMock();
+		$this->session = $this->getMockBuilder(ISession::class)
+			->getMock();
+		$this->config = $this->getMockBuilder(IAppConfig::class)
+			->getMock();
 
 		$this->controller = new SettingsController(
 			$this->appName,
 			$this->request,
 			$this->userManager,
 			$this->userSession,
-			$this->logger
+			$this->logger,
+			$this->groupManger,
+			$this->subAdmin,
+			$this->session,
+			$this->config
 		);
 
 		parent::setUp();
@@ -92,8 +118,9 @@ class SettingsControllerTest extends TestCase {
 
 	public function usersProvider() {
 		return [
-			['username', 'username'],
-			['UserName', 'username']
+			['username', 'username', 'admin'],
+			['Username', 'username', 'groupadmin'],
+			['NormalUser', 'username', 'normaluser']
 		];
 	}
 	/**
@@ -101,16 +128,17 @@ class SettingsControllerTest extends TestCase {
 	 * @param $query
 	 * @param $uid
 	 */
-	public function testImpersonate($query, $uid) {
+	public function testImpersonate($query, $uid, $group) {
 		$user = $this->createMock('\OCP\IUser');
-		$user->method('getUID')
-			->willReturn($uid);
 
 		$this->userSession
 			->method('getUser')
 			->willReturn($user);
 
-		$this->userManager->expects($this->at(0))
+		$user->method('getUID')
+			->willReturn($uid);
+
+		$this->userManager->expects($this->atLeastOnce())
 			->method('get')
 			->with($query)
 			->willReturn($user);
@@ -119,14 +147,61 @@ class SettingsControllerTest extends TestCase {
 			->method('getLastLogin')
 			->willReturn(1);
 
-		$this->userSession->expects($this->once())
-			->method('setUser')
-			->with($user);
+		if ($group === 'admin') {
+			//This user belongs to admin user
+			$this->groupManger->expects($this->any())
+				->method('isAdmin')
+				->willReturn(true);
 
-		$this->assertEquals(
-			new JSONResponse(),
-			$this->controller->impersonate($query)
-		);
+			$this->userSession->expects($this->once())
+				->method('setUser')
+				->with($user);
+
+			$this->assertEquals(
+				new JSONResponse(),
+				$this->controller->impersonate($query)
+			);
+		} elseif ($group === 'groupadmin') {
+			$this->config->expects($this->once())
+				->method('getValue')
+				->with('impersonate','impersonate_include_groups_list',"")
+				->willReturn(json_encode([$group]));
+
+			$this->groupManger->expects($this->once())
+				->method('get')
+				->willReturn($this->createMock('OCP\IGroup'));
+
+			$this->subAdmin->expects($this->any())
+				->method('isSubAdminofGroup')
+				->willReturn(true);
+
+			$this->userSession->expects($this->once())
+				->method('setUser')
+				->with($user);
+
+			$this->assertEquals(
+				new JSONResponse(),
+				$this->controller->impersonate($query)
+			);
+
+		} elseif ($group === 'normaluser') {
+			$this->config->expects($this->once())
+				->method('getValue')
+				->with('impersonate','impersonate_include_groups_list',"")
+				->willReturn("");
+
+			$this->groupManger->expects($this->any())
+				->method('isAdmin')
+				->willReturn(false);
+
+			$this->assertEquals(
+				new JSONResponse([
+					'error' => "cannotImpersonate",
+					'message' => "Cannot impersonate user <$query>",
+				], http::STATUS_NOT_FOUND),
+				$this->controller->impersonate($query)
+			);
+		}
 	}
 
 	public function normalUsers() {
@@ -136,54 +211,6 @@ class SettingsControllerTest extends TestCase {
 		];
 	}
 
-	/**
-	 * @dataProvider normalUsers
-	 * @param $query
-	 */
-
-	public function testAdminImpersonateNormalUsers($query,$uid) {
-		$loggedInUser = $this->createMock('OCP\IUser');
-		$loggedInUser
-			->expects($this->once())
-			->method('getUID')
-			->willReturn('admin');
-
-		$this->userSession
-			->expects($this->once())
-			->method('getUser')
-			->willReturn($loggedInUser);
-
-		$userManager = $this->getMockBuilder('OC\User\Manager')
-			->disableOriginalConstructor()
-			->getMock();
-
-		$userManager->expects($this->any())
-			->method('createUser')
-			->with($query,'123');
-
-		$user = $this->createMock('\OCP\IUser');
-		$user->expects($this->any())
-			->method('getUID')
-			->willReturn($uid);
-
-		$this->userManager->expects($this->at(0))
-			->method('get')
-			->with($query)
-			->willReturn($user);
-
-		$this->userSession->expects($this->once())
-			->method('setUser')
-			->with($user);
-
-		$user->expects($this->once())
-			->method('getLastLogin')
-			->willReturn(1);
-
-		$this->assertEquals(
-			new JSONResponse(),
-			$this->controller->impersonate($query)
-		);
-	}
 
 	public function neverLoggedIn() {
 		return [
@@ -217,11 +244,10 @@ class SettingsControllerTest extends TestCase {
 
 		$this->assertEquals(
 			new JSONResponse(['error' => "userNeverLoggedIn",
-				'message' => "Cannot impersonate user " . '"' . $query . '"' . " who hasn't logged in yet."
+				'message' => "Cannot impersonate user <$query> who hasn't logged in yet."
 			], http::STATUS_NOT_FOUND),
 			$this->controller->impersonate($query)
 		);
 	}
-
 }
 
