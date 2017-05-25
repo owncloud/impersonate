@@ -7,6 +7,7 @@ use OCP\AppFramework\Http\JSONResponse;
 use OCP\ILogger;
 use OCP\IRequest;
 use OCP\AppFramework\Controller;
+use OCP\ISession;
 use OCP\IUser;
 use OCP\IUserManager;
 use OCP\IUserSession;
@@ -19,6 +20,8 @@ class LogoutController extends Controller {
     private $userSession;
     /** @var ILogger */
     private $logger;
+    /** @var ISession  */
+    private $session;
 
     /**
      * @NoAdminRequired
@@ -30,32 +33,42 @@ class LogoutController extends Controller {
      * @param ILogger $logger
      */
 
-    public function __construct($appName, IRequest $request, IUserManager $userManager, IUserSession $userSession, ILogger $logger) {
+    public function __construct($appName, IRequest $request, IUserManager $userManager, IUserSession $userSession, ILogger $logger, ISession $session) {
         parent::__construct($appName, $request);
         $this->userManager = $userManager;
         $this->userSession = $userSession;
         $this->logger = $logger;
+        $this->session = $session;
     }
 
     /**
      *  @NoAdminRequired
      *
-     *  @param string userid
      *  @UseSession
      *  @return JSONResponse
      */
-    public function logoutcontroller($userid) {
-		$user = \OC::$server->getSession()->get('oldUserId');
-		$user = $this->userManager->get($user);
+	public function logoutcontroller() {
+		$impersonator = $this->session->get('impersonator');
+		if ($impersonator === null) {
+			return new JSONResponse([
+				'error' => "cannotLogout",
+				'message' => "Can not logout"
+			], Http::STATUS_NOT_FOUND);
+		}
+		$impersonatorUser = $this->userManager->get($impersonator);
 
-        if($user === null) {
-            return new JSONResponse("No user found for $userid", Http::STATUS_NOT_FOUND);
-        } else {
-			$this->userSession->setUser($user);
-			$this->logger->info("Switching back to previous user $userid", ['app' => 'impersonate']);
+		if($impersonatorUser === null) {
+			return new JSONResponse([
+				'error' => "cannotLogout",
+				'message' => "Can not logout"
+			], Http::STATUS_NOT_FOUND);
+		} else {
+			$this->userSession->setUser($impersonatorUser);
+			$this->logger->info("Switching back to previous user $impersonator", ['app' => 'impersonate']);
 			//Resume the logout
-			\OC::$server->getSession()->remove('oldUserId');
+			$this->session->remove('impersonator');
 		}
 		return new JSONResponse();
 	}
+
 }

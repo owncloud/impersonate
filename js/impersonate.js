@@ -8,16 +8,70 @@
 	var promiseGetData = getDataForApp();
 
 	function addImpersonateIcon ($localtr) {
-		var addImpersonate = '<td><a class="action permanent impersonate" href="#" title="' +
-			t('impersonate', 'Impersonate') + '">' +
-			'<img class="svg permanent action" src="' + OC.imagePath('core', 'actions/user.svg') + '" />' +
+		var TEMPLATE_BASE =
+			'<td><a class="action permanent impersonate" href="#" title="{{impersonate}}">' +
+			'<img class="svg permanent action" src="{{impersonate_src}}" />' +
 			'</a></td>';
-			$(addImpersonate).insertAfter($localtr.find('.name'));
+		var addImpersonate = {
+			/** @type {Object} **/
+			_templates: {},
+
+			render: function () {
+				var baseTemplate = this._getTemplate('base', TEMPLATE_BASE);
+				return baseTemplate({
+					impersonate_src: OC.imagePath('core', 'actions/user.svg'),
+					displayText: t('impersonate', 'Impersonate')
+				});
+			},
+
+			/**
+			 *
+			 * @param {string} key - an identifier for the template
+			 * @param {string} template - the HTML to be compiled by Handlebars
+			 * @returns {Function} from Handlebars
+			 * @private
+			 */
+			_getTemplate: function (key, template) {
+				if (!this._templates[key]) {
+					this._templates[key] = Handlebars.compile(template);
+				}
+				return this._templates[key];
+			},
+		};
+
+		var $templateAddImpersonate = addImpersonate.render();
+		$($templateAddImpersonate).insertAfter($localtr.find('.name'));
 	}
 
 	function removeImpersonateIcon ($localtr) {
-		var addImpersonate = '<td class="impersonateDisabled"><span></span></td>';
-		$(addImpersonate).insertAfter($localtr.find('.name'));
+		var TEMPLATE_BASE =
+			'<td class="impersonateDisabled"><span></span></td>';
+		var removeImpersonate = {
+			/** @type {Object} **/
+			_templates: {},
+
+			render: function () {
+				var baseTemplate = this._getTemplate('base', TEMPLATE_BASE);
+				return baseTemplate();
+			},
+
+			/**
+			 *
+			 * @param {string} key - an identifier for the template
+			 * @param {string} template - the HTML to be compiled by Handlebars
+			 * @returns {Function} from Handlebars
+			 * @private
+			 */
+			_getTemplate: function (key, template) {
+				if (!this._templates[key]) {
+					this._templates[key] = Handlebars.compile(template);
+				}
+				return this._templates[key];
+			},
+		};
+
+		var $templateRemoveImpersonate = removeImpersonate.render();
+		$($templateRemoveImpersonate).insertAfter($localtr.find('.name'));
 	}
 
 	var includedGroups,
@@ -80,11 +134,11 @@
 	});
 
 	$(document).ready(function () {
-		function impersonate(userid) {
+		function impersonate(target) {
 			var currentUser = OC.getCurrentUser().uid;
 			$.post(
 				OC.generateUrl('apps/impersonate/user'),
-				{ userid: userid }
+				{ target: target }
 			).done(function( result ) {
 				OC.redirect(OC.generateUrl('apps/files'));
 			}).fail(function( result ) {
@@ -92,13 +146,15 @@
 					OC.dialogs.alert(t('impersonate', result.responseJSON.message),t('impersonate', "Error"));
 				} else if((result.responseJSON.error === "userNotFound") && (result.responseJSON.message.length > 0)){
 					OC.dialogs.alert(t('impersonate', result.responseJSON.message), t('impersonate', "Error"));
+				} else if((result.responseJSON.error === "cannotImpersonate") && (result.responseJSON.message.length > 0)){
+					OC.dialogs.alert(t('impersonate', result.responseJSON.message), t('impersonate', "Error"));
 				}
 			});
 		}
 
 		$('#userlist').on('click', '.impersonate', function() {
-			var userid = $(this).parents('tr').find('.name').text();
-			impersonate(userid);
+			var target = $(this).parents('tr').find('.name').text();
+			impersonate(target);
 		});
 
 	});
