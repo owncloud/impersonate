@@ -39,20 +39,22 @@ $(document).ready(function () {
 	var $templateImpersonate = ImpersonateNotification.render();
 	$($templateImpersonate).insertBefore("#notification");
 
-	function logoutHandler(userid) {
+	function logoutHandler() {
 		var promisObj = $.post(
 			OC.generateUrl('apps/impersonate/logout'),
-			{userid: userid}
 		).promise();
 
 		promisObj.done(function () {
 			OC.redirect('apps/files');
+		}).fail(function (result) {
+			if ((result.responseJSON.error === "cannotLogout") && (result.responseJSON.message.length > 0))
+			OC.dialogs.alert(t('impersonate', result.responseJSON.message),t('impersonate', "Error"));
 		});
+
 	}
 
 		$("#logout").on('click', function (event) {
 			event.preventDefault();
-			var userid = $("#expandDisplayName").text();
-			logoutHandler(userid);
+			logoutHandler();
 		});
 });

@@ -11,7 +11,7 @@
 
 \OCP\App::registerAdmin('impersonate', 'settings-admin');
 
-if(\OC::$server->getSession()->get('oldUserId') !== null) {
+if(\OC::$server->getSession()->get('impersonator') !== null) {
 	\OCP\Util::addScript('impersonate','impersonate_logout');
 	\OCP\Util::addStyle('impersonate', 'impersonate');
 }
