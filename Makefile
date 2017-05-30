@@ -31,19 +31,22 @@ clean: clean-build
 #
 build-src:
 ifdef CAN_SIGN
-	$(sign) --path="$(CURDIR)"
+	mkdir -p build/$(appname)
+	cp --parents -r \
+		appinfo \
+		controller \
+		css \
+		img \
+		js \
+		l10n \
+		templates \
+		build/$(appname)
+	cp settings-admin.php build/$(appname)
+	$(sign) --path="$(CURDIR)/build/$(appname)"
 else
 	@echo $(sign_skip_msg)
 endif
-		mkdir -p build
-		tar cvzf build/$(appname).tar.gz ../$(appname) \
-		--exclude-vcs \
-		--exclude="../$(appname)/tests" \
-		--exclude="../$(appname)/build" \
-		--exclude="../$(appname)/$(appname).csr" \
-		--exclude="../$(appname)/$(appname).crt" \
-		--exclude="../$(appname)/$(appname).key" \
-		--exclude="../$(appname)/Makefile"
+	tar -czf build/$(appname).tar.gz -C $(CURDIR)/build/$(appname) ../$(appname)
 
 .PHONY: clean
 clean-build:
