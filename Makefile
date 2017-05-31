@@ -24,6 +24,9 @@ all: build-src
 .PHONY: clean
 clean: clean-build
 
+.PHONY: dist
+dist:
+	make build-src
 .PHONY: build-src
 
 #
