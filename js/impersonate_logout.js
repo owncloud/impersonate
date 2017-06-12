@@ -41,7 +41,7 @@ $(document).ready(function () {
 
 	function logoutHandler() {
 		var promisObj = $.post(
-			OC.generateUrl('apps/impersonate/logout'),
+			OC.generateUrl('apps/impersonate/logout')
 		).promise();
 
 		promisObj.done(function () {
