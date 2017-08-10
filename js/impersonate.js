@@ -148,6 +148,8 @@
 					OC.dialogs.alert(t('impersonate', result.responseJSON.message), t('impersonate', "Error"));
 				} else if((result.responseJSON.error === "cannotImpersonate") && (result.responseJSON.message.length > 0)){
 					OC.dialogs.alert(t('impersonate', result.responseJSON.message), t('impersonate', "Error"));
+				} else if ((result.responseJSON.error === "cannotImpersonateAdminUser") && (result.responseJSON.message.length > 0)) {
+					OC.dialogs.alert(t('impersonate', result.responseJSON.message), t('impersonate', "Error"));
 				}
 			});
 		}
