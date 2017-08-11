@@ -110,7 +110,7 @@ class SettingsControllerTest extends TestCase {
 		$this->assertEquals(
 			new JSONResponse([
 				'error' => 'userNotFound',
-				'message' => "No user found for notexisting@uid"
+				'message' => "Unexpected error occured"
 			], Http::STATUS_NOT_FOUND),
 			$this->controller->impersonate('notexisting@uid')
 		);
@@ -197,7 +197,7 @@ class SettingsControllerTest extends TestCase {
 			$this->assertEquals(
 				new JSONResponse([
 					'error' => "cannotImpersonate",
-					'message' => "Cannot impersonate user <$query>",
+					'message' => "Can not impersonate",
 				], http::STATUS_NOT_FOUND),
 				$this->controller->impersonate($query)
 			);
@@ -244,9 +244,59 @@ class SettingsControllerTest extends TestCase {
 
 		$this->assertEquals(
 			new JSONResponse(['error' => "userNeverLoggedIn",
-				'message' => "Cannot impersonate user <$query> who hasn't logged in yet."
+				'message' => "Can not impersonate"
 			], http::STATUS_NOT_FOUND),
 			$this->controller->impersonate($query)
+		);
+	}
+
+	public function adminAndGroupAdminUsers() {
+		return [
+			['admin', 'admin', 'subadmin', 'subadmin']
+		];
+	}
+
+	/**
+	 * @dataProvider adminAndGroupAdminUsers
+	 * @param $adminUser
+	 * @param $adminUid
+	 * @param $subadminUser
+	 * @param $subadminUid
+	 */
+	public function testRestrictSwitchToAdminUser($adminUser, $adminUid, $subadminUser, $subadminUid) {
+
+		$user = $this->createMock('\OCP\IUser');
+		$user->method('getUID')
+			->willReturn($subadminUid);
+
+		$this->userSession
+			->method('getUser')
+			->willReturn($user);
+
+		$this->userManager->expects($this->at(0))
+			->method('get')
+			->with($adminUser)
+			->willReturn($user);
+
+		$user->expects($this->once())
+			->method('getLastLogin')
+			->willReturn(1);
+
+		$this->groupManger->expects($this->at(0))
+			->method('isAdmin')
+			->with($adminUser)
+			->willReturn(true);
+
+		$this->groupManger->expects($this->at(1))
+			->method('isAdmin')
+			->with($subadminUser)
+			->willReturn(false);
+
+		$this->assertEquals(
+			new JSONResponse(['error' => "cannotImpersonateAdminUser",
+				'message' => "Can not impersonate"
+				], http::STATUS_NOT_FOUND),
+			$this->controller->impersonate($adminUser)
 		);
 	}
 }

@@ -108,6 +108,13 @@ class SettingsController extends Controller {
 				'error' => "userNeverLoggedIn",
 				'message' => "Can not impersonate",
 			], http::STATUS_NOT_FOUND);
+		} elseif ($this->groupManager->isAdmin($target) && !$this->groupManager->isAdmin($impersonator)) {
+			// If not an admin then no impersonation
+			$this->logger->warning('Can not allow user "' . $impersonator . '" trying to impersonate "'. $target . '"');
+			return new JSONResponse([
+				'error' => "cannotImpersonateAdminUser",
+				'message' => "Can not impersonate",
+			], http::STATUS_NOT_FOUND);
 		} else {
 
 			if ($this->groupManager->isAdmin($this->userSession->getUser()->getUID())) {
