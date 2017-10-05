@@ -9,7 +9,6 @@
  * @copyright Jörn Friedrich Dreyer 2015
  */
 
-\OCP\App::registerAdmin('impersonate', 'settings-admin');
 
 
 if(\OC::$server->getSession()->get('impersonator') !== null) {
