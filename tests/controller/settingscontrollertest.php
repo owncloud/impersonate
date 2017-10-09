@@ -17,6 +17,7 @@ use OCP\AppFramework\Http\JSONResponse;
 use OCP\AppFramework\Http;
 use OCP\IAppConfig;
 use OCP\IGroupManager;
+use OCP\IL10N;
 use OCP\IRequest;
 use OCP\ILogger;
 use OCP\IUserManager;
@@ -52,6 +53,8 @@ class SettingsControllerTest extends TestCase {
 	private $session;
 	/** @var IAppConfig  */
 	private $config;
+	/** @var  IL10N */
+	private $l;
 
 	public function setUp() {
 		$this->appName = 'impersonate';
@@ -80,6 +83,8 @@ class SettingsControllerTest extends TestCase {
 			->getMock();
 		$this->config = $this->getMockBuilder(IAppConfig::class)
 			->getMock();
+		$this->l = $this->getMockBuilder(IL10N::class)
+			->getMock();
 
 		$this->controller = new SettingsController(
 			$this->appName,
@@ -90,7 +95,8 @@ class SettingsControllerTest extends TestCase {
 			$this->groupManger,
 			$this->subAdmin,
 			$this->session,
-			$this->config
+			$this->config,
+			$this->l
 		);
 
 		parent::setUp();
@@ -110,7 +116,7 @@ class SettingsControllerTest extends TestCase {
 		$this->assertEquals(
 			new JSONResponse([
 				'error' => 'userNotFound',
-				'message' => "Unexpected error occured"
+				'message' => $this->l->t("Unexpected error occured")
 			], Http::STATUS_NOT_FOUND),
 			$this->controller->impersonate('notexisting@uid')
 		);
@@ -197,7 +203,7 @@ class SettingsControllerTest extends TestCase {
 			$this->assertEquals(
 				new JSONResponse([
 					'error' => "cannotImpersonate",
-					'message' => "Can not impersonate",
+					'message' => $this->l->t("Can not impersonate"),
 				], http::STATUS_NOT_FOUND),
 				$this->controller->impersonate($query)
 			);
@@ -244,7 +250,7 @@ class SettingsControllerTest extends TestCase {
 
 		$this->assertEquals(
 			new JSONResponse(['error' => "userNeverLoggedIn",
-				'message' => "Can not impersonate"
+				'message' => $this->l->t("Can not impersonate")
 			], http::STATUS_NOT_FOUND),
 			$this->controller->impersonate($query)
 		);
@@ -294,10 +300,41 @@ class SettingsControllerTest extends TestCase {
 
 		$this->assertEquals(
 			new JSONResponse(['error' => "cannotImpersonateAdminUser",
-				'message' => "Can not impersonate"
+				'message' => $this->l->t("Can not impersonate")
 				], http::STATUS_NOT_FOUND),
 			$this->controller->impersonate($adminUser)
 		);
+	}
+
+	public function groupAdminUsers() {
+		return [
+			['subadmin', 'subadmin']
+		];
+	}
+
+	/**
+	 * @dataProvider groupAdminUsers
+	 * @param $subadminUser
+	 * @param $subadminUid
+	 */
+	public function testRestrictNestedImpersonate($subadminUser, $subadminUid) {
+		$user = $this->createMock('\OCP\IUser');
+		$user->method('getUID')
+			->willReturn($subadminUid);
+
+		$this->userSession
+			->method('getUser')
+			->willReturn($user);
+
+		$this->session
+			->method('get')
+			->willReturn('foo');
+
+		$this->assertEquals(
+			new JSONResponse(['error' => "stopNestedImpersonation",
+			'message' => $this->l->t("Can not impersonate")
+		], http::STATUS_NOT_FOUND),
+		$this->controller->impersonate('bar'));
 	}
 }
 
