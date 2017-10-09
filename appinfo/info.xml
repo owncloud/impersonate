@@ -13,13 +13,13 @@ Administrators can find configuration options in the 'User Authentication" secti
     <author>Jörn Friedrich Dreyer</author>
     <version>0.1.0</version>
     <documentation>
-		<admin>https://doc.owncloud.org/server/latest/admin_manual/issues/impersonate_users.html</admin>
-	</documentation>
-	<bugs>https://github.com/owncloud/impersonate/issues</bugs>
-	<repository type="git">http://github.com/owncloud/impersonate.git</repository>
+	<admin>https://doc.owncloud.org/server/latest/admin_manual/issues/impersonate_users.html</admin>
+    </documentation>
+    <bugs>https://github.com/owncloud/impersonate/issues</bugs>
+    <repository type="git">http://github.com/owncloud/impersonate.git</repository>
     <dependencies>
         <owncloud min-version="9.0" max-version="10.0" />
     </dependencies>
     <category>tools</category>
-    <screenshot>https://github.com/owncloud/impersonate/raw/224cd966dcc7b7d5d0d5b810b1de29b69bbf3c1b/screenshot/impersonate.png</screenshot>
+    <screenshot>https://raw.githubusercontent.com/owncloud/screenshots/master/impersonate/impersonate.png</screenshot>
 </info>
