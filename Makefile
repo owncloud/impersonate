@@ -18,8 +18,8 @@ endif
 #
 # Catch-all rules
 #
-.PHONY: all
-all: build-src
+.PHONY: dist
+dist: build-src
 
 .PHONY: clean
 clean: clean-build
@@ -43,10 +43,10 @@ ifdef CAN_SIGN
 		build/$(appname)
 	cp settings-admin.php build/$(appname)
 	$(sign) --path="$(CURDIR)/build/$(appname)"
+	tar -czf build/$(appname).tar.gz -C $(CURDIR)/build/$(appname) ../$(appname)
 else
 	@echo $(sign_skip_msg)
 endif
-	tar -czf build/$(appname).tar.gz -C $(CURDIR)/build/$(appname) ../$(appname)
 
 .PHONY: clean
 clean-build:
