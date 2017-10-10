@@ -97,6 +97,7 @@ class SettingsController extends Controller {
 		$user = $this->userManager->get($target);
 		if ($user === null) {
 			$this->logger->info("User $target doesn't exist. User $impersonator cannot impersonate $target");
+			$this->session->remove('impersonator');
 			return new JSONResponse([
 				'error' => 'userNotFound',
 				'message' => "Unexpected error occured"
@@ -104,6 +105,7 @@ class SettingsController extends Controller {
 		} elseif ($user->getLastLogin() === 0) {
 			// It's a first time login
 			$this->logger->info("User $target did not logged in yet. User $impersonator cannot impersonate $target");
+			$this->session->remove('impersonator');
 			return new JSONResponse([
 				'error' => "userNeverLoggedIn",
 				'message' => "Can not impersonate",
@@ -111,6 +113,7 @@ class SettingsController extends Controller {
 		} elseif ($this->groupManager->isAdmin($target) && !$this->groupManager->isAdmin($impersonator)) {
 			// If not an admin then no impersonation
 			$this->logger->warning('Can not allow user "' . $impersonator . '" trying to impersonate "'. $target . '"');
+			$this->session->remove('impersonator');
 			return new JSONResponse([
 				'error' => "cannotImpersonateAdminUser",
 				'message' => "Can not impersonate",
@@ -136,6 +139,7 @@ class SettingsController extends Controller {
 				}
 			}
 
+			$this->session->remove('impersonator');
 			return new JSONResponse([
 				'error' => "cannotImpersonate",
 				'message' => "Can not impersonate",
