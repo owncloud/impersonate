@@ -17,6 +17,7 @@ use OCP\AppFramework\Http;
 use OCP\AppFramework\Http\JSONResponse;
 use OCP\IAppConfig;
 use OCP\IGroupManager;
+use OCP\IL10N;
 use OCP\ILogger;
 use OCP\IRequest;
 use OCP\AppFramework\Controller;
@@ -42,6 +43,8 @@ class SettingsController extends Controller {
 	private $session;
 	/** @var IAppConfig  */
 	private $config;
+	/** @var IL10N  */
+	private $l;
 
 	/**
 	 * SettingsController constructor.
@@ -54,7 +57,7 @@ class SettingsController extends Controller {
 	 */
 	public function __construct($appName, IRequest $request, IUserManager $userManager,
 				IUserSession $userSession, ILogger $logger, IGroupManager $groupManager,
-				SubAdmin $subAdmin, ISession $session, IAppConfig $config) {
+				SubAdmin $subAdmin, ISession $session, IAppConfig $config, IL10N $l10n) {
 		parent::__construct($appName, $request);
 		$this->userManager = $userManager;
 		$this->userSession = $userSession;
@@ -63,6 +66,7 @@ class SettingsController extends Controller {
 		$this->subAdmin = $subAdmin;
 		$this->session = $session;
 		$this->config = $config;
+		$this->l = $l10n;
 	}
 
 	/**
@@ -92,6 +96,11 @@ class SettingsController extends Controller {
 
 		if ($this->session->get('impersonator') === null) {
 			$this->session->set('impersonator', $impersonator);
+		} else {
+			return new JSONResponse([
+				'error' => 'stopNestedImpersonation',
+				'message' => $this->l->t("Can not impersonate"),
+			], http::STATUS_NOT_FOUND);
 		}
 
 		$user = $this->userManager->get($target);
@@ -100,7 +109,7 @@ class SettingsController extends Controller {
 			$this->session->remove('impersonator');
 			return new JSONResponse([
 				'error' => 'userNotFound',
-				'message' => "Unexpected error occured"
+				'message' => $this->l->t("Unexpected error occured"),
 			], Http::STATUS_NOT_FOUND);
 		} elseif ($user->getLastLogin() === 0) {
 			// It's a first time login
@@ -108,7 +117,7 @@ class SettingsController extends Controller {
 			$this->session->remove('impersonator');
 			return new JSONResponse([
 				'error' => "userNeverLoggedIn",
-				'message' => "Can not impersonate",
+				'message' => $this->l->t("Can not impersonate"),
 			], http::STATUS_NOT_FOUND);
 		} elseif ($this->groupManager->isAdmin($target) && !$this->groupManager->isAdmin($impersonator)) {
 			// If not an admin then no impersonation
@@ -116,7 +125,7 @@ class SettingsController extends Controller {
 			$this->session->remove('impersonator');
 			return new JSONResponse([
 				'error' => "cannotImpersonateAdminUser",
-				'message' => "Can not impersonate",
+				'message' => $this->l->t("Can not impersonate"),
 			], http::STATUS_NOT_FOUND);
 		} else {
 
@@ -142,7 +151,7 @@ class SettingsController extends Controller {
 			$this->session->remove('impersonator');
 			return new JSONResponse([
 				'error' => "cannotImpersonate",
-				'message' => "Can not impersonate",
+				'message' => $this->l->t("Can not impersonate"),
 			], http::STATUS_NOT_FOUND);
 		}
 	}

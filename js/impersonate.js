@@ -143,13 +143,15 @@
 				OC.redirect(OC.generateUrl('apps/files'));
 			}).fail(function( result ) {
 				if((result.responseJSON.error === "userNeverLoggedIn") && (result.responseJSON.message.length > 0)) {
-					OC.dialogs.alert(t('impersonate', result.responseJSON.message),t('impersonate', "Error"));
+					OC.dialogs.alert(result.responseJSON.message, t('impersonate', "Error"));
 				} else if((result.responseJSON.error === "userNotFound") && (result.responseJSON.message.length > 0)){
-					OC.dialogs.alert(t('impersonate', result.responseJSON.message), t('impersonate', "Error"));
+					OC.dialogs.alert(result.responseJSON.message, t('impersonate', "Error"));
 				} else if((result.responseJSON.error === "cannotImpersonate") && (result.responseJSON.message.length > 0)){
-					OC.dialogs.alert(t('impersonate', result.responseJSON.message), t('impersonate', "Error"));
+					OC.dialogs.alert(result.responseJSON.message, t('impersonate', "Error"));
 				} else if ((result.responseJSON.error === "cannotImpersonateAdminUser") && (result.responseJSON.message.length > 0)) {
-					OC.dialogs.alert(t('impersonate', result.responseJSON.message), t('impersonate', "Error"));
+					OC.dialogs.alert(result.responseJSON.message, t('impersonate', "Error"));
+				} else if ((result.responseJSON.error === "stopNestedImpersonation") && (result.responseJSON.message.length > 0)) {
+					OC.dialogs.alert(result.responseJSON.message, t('impersonate', "Error"));
 				}
 			});
 		}
