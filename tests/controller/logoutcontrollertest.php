@@ -21,6 +21,7 @@ use OCP\ILogger;
 use OCP\IUserManager;
 use OCP\IUserSession;
 use OC\Group\Backend;
+use Symfony\Component\EventDispatcher\GenericEvent;
 use Test\TestCase;
 
 /**
@@ -44,6 +45,7 @@ class LogoutControllerTest extends TestCase {
 	private $logger;
 	/** @var ISession  */
 	private $session;
+	private $eventDispatcher;
 
 	public function setUp() {
 		$this->appName = 'impersonate';
@@ -73,8 +75,7 @@ class LogoutControllerTest extends TestCase {
 			$this->userManager,
 			$this->userSession,
 			$this->logger,
-			$this->session
-		);
+			$this->session);
 
 		parent::setUp();
 	}
@@ -91,7 +92,7 @@ class LogoutControllerTest extends TestCase {
 	 * @param $userId
 	 */
 	public function  testImpersonateLogout($userId) {
-
+		$genericEvent = new GenericEvent(null, ['cancel' => false]);
 		if($userId === null) {
 			$this->session->expects($this->once())
 				->method('get')
@@ -102,7 +103,7 @@ class LogoutControllerTest extends TestCase {
 					'error' => "cannotLogout",
 					'message' => "Cannot logout"
 				], Http::STATUS_NOT_FOUND),
-				$this->controller->logoutcontroller()
+				$this->controller->logoutcontroller($genericEvent)
 			);
 		} else {
 			$this->session->expects($this->once())
@@ -115,9 +116,10 @@ class LogoutControllerTest extends TestCase {
 
 			$this->assertEquals(
 				new JSONResponse(),
-				$this->controller->logoutcontroller()
+				$this->controller->logoutcontroller($genericEvent)
 			);
 		}
 	}
+
 }
 
