@@ -8,70 +8,19 @@
 	var promiseGetData = getDataForApp();
 
 	function addImpersonateIcon ($localtr) {
-		var TEMPLATE_BASE =
-			'<td><a class="action permanent impersonate" href="#" title="{{impersonate}}">' +
-			'<img class="svg permanent action" src="{{impersonate_src}}" />' +
-			'</a></td>';
-		var addImpersonate = {
-			/** @type {Object} **/
-			_templates: {},
-
-			render: function () {
-				var baseTemplate = this._getTemplate('base', TEMPLATE_BASE);
-				return baseTemplate({
-					impersonate_src: OC.imagePath('core', 'actions/user.svg'),
-					displayText: t('impersonate', 'Impersonate')
-				});
-			},
-
-			/**
-			 *
-			 * @param {string} key - an identifier for the template
-			 * @param {string} template - the HTML to be compiled by Handlebars
-			 * @returns {Function} from Handlebars
-			 * @private
-			 */
-			_getTemplate: function (key, template) {
-				if (!this._templates[key]) {
-					this._templates[key] = Handlebars.compile(template);
-				}
-				return this._templates[key];
-			},
+		var context = {
+			impersonate_src: OC.imagePath('core', 'actions/user.svg'),
+			displayText: t('impersonate', 'Impersonate')
 		};
 
-		var $templateAddImpersonate = addImpersonate.render();
-		$($templateAddImpersonate).insertAfter($localtr.find('.name'));
+		var $html = OCA.Impersonate['addImpersonateIcon'](context);
+		$($html).insertAfter($localtr.find('.name'));
 	}
 
 	function removeImpersonateIcon ($localtr) {
-		var TEMPLATE_BASE =
-			'<td class="impersonateDisabled"><span></span></td>';
-		var removeImpersonate = {
-			/** @type {Object} **/
-			_templates: {},
-
-			render: function () {
-				var baseTemplate = this._getTemplate('base', TEMPLATE_BASE);
-				return baseTemplate();
-			},
-
-			/**
-			 *
-			 * @param {string} key - an identifier for the template
-			 * @param {string} template - the HTML to be compiled by Handlebars
-			 * @returns {Function} from Handlebars
-			 * @private
-			 */
-			_getTemplate: function (key, template) {
-				if (!this._templates[key]) {
-					this._templates[key] = Handlebars.compile(template);
-				}
-				return this._templates[key];
-			},
-		};
-
-		var $templateRemoveImpersonate = removeImpersonate.render();
-		$($templateRemoveImpersonate).insertAfter($localtr.find('.name'));
+		var context = {};
+		var $html = OCA.Impersonate['removeImpersonateIcon'](context);
+		$($html).insertAfter($localtr.find('.name'));
 	}
 
 	var includedGroups,
