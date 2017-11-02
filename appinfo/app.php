@@ -13,6 +13,7 @@
 
 if(\OC::$server->getSession()->get('impersonator') !== null) {
 	\OCP\Util::addScript('impersonate','impersonate_logout');
+	\OCP\Util::addScript('impersonate', 'templates/impersonateNotification.handlebars');
 	\OCP\Util::addStyle('impersonate', 'impersonate');
 }
 // --- register js for user management------------------------------------------
@@ -21,6 +22,8 @@ $eventDispatcher->addListener(
 	'OC\Settings\Users::loadAdditionalScripts',
 	function() {
 		\OCP\Util::addScript('impersonate', 'impersonate');
+		\OCP\Util::addScript('impersonate', 'templates/addImpersonateIcon.handlebars');
+		\OCP\Util::addScript('impersonate', 'templates/removeImpersonateIcon.handlebars');
 	}
 );
 
