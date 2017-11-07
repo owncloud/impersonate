@@ -4,11 +4,19 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
-## [Unreleased]
+## [0.1.1] - 2017-11-07
+
 ### Changed
 
+- Replace Phony target all with dist in Makefile - [#65](https://github.com/owncloud/impersonate/issues/65)
+- Change screenshot, fix indentation in app info - [#61](https://github.com/owncloud/impersonate/issues/61)
+
+### Fixed
+
+- Prevent further level impersonation - [#63](https://github.com/owncloud/impersonate/issues/63)
+- Clear session when impersonation does not happen - [#62](https://github.com/owncloud/impersonate/issues/62)
 - Restrict impersonate to admin user from subadmin user - [#49](https://github.com/owncloud/impersonate/issues/49)
-- Remove trailing comma - [#46](https://github.com/owncloud/impersonate/issues/46)
+- Minor code cleanup - [#46](https://github.com/owncloud/impersonate/issues/46)
 
 ## [0.1.0] - 2017-05-31
 
