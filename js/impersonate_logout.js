@@ -1,7 +1,5 @@
 $(document).ready(function () {
 
-	$("#logout").attr("href","#");
-
 	var TEMPLATE_BASE =
 		'<div id="impersonate-notification" ' +
 		'<div class="row">' +
@@ -39,22 +37,4 @@ $(document).ready(function () {
 	var $templateImpersonate = ImpersonateNotification.render();
 	$($templateImpersonate).insertBefore("#notification");
 
-	function logoutHandler() {
-		var promisObj = $.post(
-			OC.generateUrl('apps/impersonate/logout')
-		).promise();
-
-		promisObj.done(function () {
-			OC.redirect('apps/files');
-		}).fail(function (result) {
-			if ((result.responseJSON.error === "cannotLogout") && (result.responseJSON.message.length > 0))
-			OC.dialogs.alert(t('impersonate', result.responseJSON.message),t('impersonate', "Error"));
-		});
-
-	}
-
-		$("#logout").on('click', function (event) {
-			event.preventDefault();
-			logoutHandler();
-		});
 });

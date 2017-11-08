@@ -11,6 +11,7 @@
 
 \OCP\App::registerAdmin('impersonate', 'settings-admin');
 
+
 if(\OC::$server->getSession()->get('impersonator') !== null) {
 	\OCP\Util::addScript('impersonate','impersonate_logout');
 	\OCP\Util::addStyle('impersonate', 'impersonate');
@@ -23,4 +24,14 @@ $eventDispatcher->addListener(
 		\OCP\Util::addScript('impersonate', 'impersonate');
 	}
 );
+$logoutController = new OCA\Impersonate\Controller\LogoutController(
+	'impersonate',
+	\OC::$server->getRequest(),
+	\OC::$server->getUserManager(),
+	OC::$server->getUserSession(),
+	OC::$server->getLogger(),
+	OC::$server->getSession()
+);
+$eventDispatcher->addListener('\OC\User\Session::pre_logout', [$logoutController, 'logoutcontroller']);
+
 
