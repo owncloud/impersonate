@@ -1,6 +1,7 @@
 OC.L10N.register(
     "impersonate",
     {
+    "Unexpected error occured" : "Ocorreu um erro inesperado",
     "Impersonate" : "Personificação",
     "Error" : "Erro",
     "Logged in as {currentUser}" : "Autenticado como {currentUser}",
