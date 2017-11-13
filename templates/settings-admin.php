@@ -1,3 +1,7 @@
+<?php
+script('impersonate', 'settings-admin');
+style('impersonate', 'settings-admin');
+?>
 <div class="section" id="impersonateTemplateSettings" >
 
 	<h2><?php p($l->t('Impersonate Settings'));?></h2>
