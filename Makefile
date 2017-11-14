@@ -68,7 +68,6 @@ ifdef CAN_SIGN
 		l10n \
 		templates \
 		build/$(appname)
-	cp settings-admin.php build/$(appname)
 	$(sign) --path="$(CURDIR)/build/$(appname)"
 	rm -f build/$(appname)/js/templates/*.handlebars
 	tar -czf build/$(appname).tar.gz -C $(CURDIR)/build/$(appname) ../$(appname)

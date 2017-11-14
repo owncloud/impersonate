@@ -2,6 +2,9 @@
 
 namespace OCA\Impersonate\Controller;
 
+use OC\Authentication\Token\DefaultTokenProvider;
+use OC\User\Session;
+use OCA\Impersonate\Util;
 use OCP\AppFramework\Controller;
 use OCP\AppFramework\Http;
 use OCP\AppFramework\Http\JSONResponse;
@@ -25,6 +28,9 @@ class LogoutController extends Controller {
     private $session;
     /** @var EventDispatcher  */
     private $eventDispatcher;
+    private $tokenProvider;
+    private $ocUserSession;
+    private $util;
 
 	/**
 	 * LogoutController constructor.
@@ -40,13 +46,17 @@ class LogoutController extends Controller {
 	 * @param EventDispatcher $eventDispatcher
 	 */
 
-    public function __construct($appName, IRequest $request,IUserManager $userManager, IUserSession $userSession, ILogger $logger, ISession $session) {
+    public function __construct($appName, IRequest $request,IUserManager $userManager,
+								IUserSession $userSession, ILogger $logger, ISession $session,
+								DefaultTokenProvider $tokenProvider, Util $util) {
 		parent::__construct($appName, $request);
 		$this->userManager = $userManager;
 		$this->userSession = $userSession;
 		$this->logger = $logger;
 		$this->session = $session;
 		$this->eventDispatcher = \OC::$server->getEventDispatcher();
+		$this->tokenProvider = $tokenProvider;
+		$this->util = $util;
 	}
 
     /**
@@ -71,10 +81,8 @@ class LogoutController extends Controller {
 				'message' => "Cannot logout"
 			], Http::STATUS_NOT_FOUND);
 		} else {
-			$this->userSession->setUser($impersonatorUser);
+			$this->util->switchUser($impersonatorUser, null);
 			$this->logger->info("Switching back to previous user $impersonator", ['app' => 'impersonate']);
-			//Resume the logout
-			$this->session->remove('impersonator');
 			$event->setArgument('cancel', true);
 		}
 

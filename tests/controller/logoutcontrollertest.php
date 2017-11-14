@@ -46,6 +46,8 @@ class LogoutControllerTest extends TestCase {
 	/** @var ISession  */
 	private $session;
 	private $eventDispatcher;
+	private $tokenProvider;
+	private $util;
 
 	public function setUp() {
 		$this->appName = 'impersonate';
@@ -58,7 +60,7 @@ class LogoutControllerTest extends TestCase {
 			->disableOriginalConstructor()
 			->getMock();
 		$this->userSession = $this->getMockBuilder(
-			'\OCP\IUserSession')
+			'\OC\User\Session')
 			->disableOriginalConstructor()
 			->getMock();
 		$this->logger = $this->getMockBuilder(
@@ -68,6 +70,8 @@ class LogoutControllerTest extends TestCase {
 		$this->session = $this->getMockBuilder('OCP\ISession')
 			->disableOriginalConstructor()
 			->getMock();
+		$this->tokenProvider = $this->createMock(\OC\Authentication\Token\DefaultTokenProvider::class);
+		$this->util = $this->createMock(\OCA\Impersonate\Util::class);
 
 		$this->controller = new LogoutController(
 			$this->appName,
@@ -75,7 +79,9 @@ class LogoutControllerTest extends TestCase {
 			$this->userManager,
 			$this->userSession,
 			$this->logger,
-			$this->session);
+			$this->session,
+			$this->tokenProvider,
+			$this->util);
 
 		parent::setUp();
 	}
@@ -106,7 +112,7 @@ class LogoutControllerTest extends TestCase {
 				$this->controller->logoutcontroller($genericEvent)
 			);
 		} else {
-			$this->session->expects($this->once())
+			$this->session->expects($this->any())
 				->method('get')
 				->willReturn('impersonator');
 
