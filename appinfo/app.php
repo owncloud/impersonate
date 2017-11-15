@@ -32,7 +32,14 @@ $logoutController = new OCA\Impersonate\Controller\LogoutController(
 	\OC::$server->getUserManager(),
 	OC::$server->getUserSession(),
 	OC::$server->getLogger(),
-	OC::$server->getSession()
+	OC::$server->getSession(),
+	\OC::$server->query('\OC\Authentication\Token\DefaultTokenProvider'),
+	new \OCA\Impersonate\Util(
+		\OC::$server->getSession(),
+		\OC::$server->getUserSession(),
+		\OC::$server->getRequest(),
+		\OC::$server->query('\OC\Authentication\Token\DefaultTokenProvider')
+	)
 );
 $eventDispatcher->addListener('\OC\User\Session::pre_logout', [$logoutController, 'logoutcontroller']);
 

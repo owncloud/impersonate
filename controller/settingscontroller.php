@@ -11,8 +11,11 @@
 
 namespace OCA\Impersonate\Controller;
 
+use OC\Authentication\Token\DefaultTokenProvider;
 use OC\Group\Manager;
 use OC\SubAdmin;
+use OC\User\User;
+use OCA\Impersonate\Util;
 use OCP\AppFramework\Http;
 use OCP\AppFramework\Http\JSONResponse;
 use OCP\IAppConfig;
@@ -45,6 +48,12 @@ class SettingsController extends Controller {
 	private $config;
 	/** @var IL10N  */
 	private $l;
+	/** @var DefaultTokenProvider  */
+	private $tokenProvider;
+	/** @var \OC\User\Session  */
+	private $ocUserSession;
+	/** @var Util  */
+	private $util;
 
 	/**
 	 * SettingsController constructor.
@@ -54,10 +63,17 @@ class SettingsController extends Controller {
 	 * @param IUserManager $userManager
 	 * @param IUserSession $userSession
 	 * @param ILogger $logger
+	 * @param IGroupManager $groupManager
+	 * @param SubAdmin $subAdmin
+	 * @param ISession $session
+	 * @param IAppConfig $config
+	 * @param IL10N $l10n
+	 * @param DefaultTokenProvider $tokenProvider
 	 */
 	public function __construct($appName, IRequest $request, IUserManager $userManager,
 				IUserSession $userSession, ILogger $logger, IGroupManager $groupManager,
-				SubAdmin $subAdmin, ISession $session, IAppConfig $config, IL10N $l10n) {
+				SubAdmin $subAdmin, ISession $session, IAppConfig $config, IL10N $l10n,
+				DefaultTokenProvider $tokenProvider) {
 		parent::__construct($appName, $request);
 		$this->userManager = $userManager;
 		$this->userSession = $userSession;
@@ -67,6 +83,9 @@ class SettingsController extends Controller {
 		$this->session = $session;
 		$this->config = $config;
 		$this->l = $l10n;
+		$this->tokenProvider = $tokenProvider;
+		$this->ocUserSession = \OC::$server->getUserSession();
+		$this->util = new Util($this->session, $this->ocUserSession, $this->request, $tokenProvider);
 	}
 
 	/**
@@ -131,7 +150,7 @@ class SettingsController extends Controller {
 
 			if ($this->groupManager->isAdmin($this->userSession->getUser()->getUID())) {
 				$this->logger->info("User $impersonator impersonated user $target", ['app' => 'impersonate']);
-				$this->userSession->setUser($user);
+				$this->util->switchUser($user, $impersonator);
 				return new JSONResponse();
 			}
 
@@ -142,7 +161,7 @@ class SettingsController extends Controller {
 				foreach ($includedGroups as $group) {
 					if($this->subAdmin->isSubAdminofGroup($this->userSession->getUser(), $this->groupManager->get($group))) {
 						$this->logger->info("User $impersonator impersonated user $target", ['app' => 'impersonate']);
-						$this->userSession->setUser($user);
+						$this->util->switchUser($user, $impersonator);
 						return new JSONResponse();
 					}
 				}
