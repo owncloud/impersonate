@@ -21,6 +21,7 @@ use OCP\ILogger;
 use OCP\IUserManager;
 use OCP\IUserSession;
 use OC\Group\Backend;
+use Symfony\Component\EventDispatcher\GenericEvent;
 use Test\TestCase;
 
 /**
@@ -44,6 +45,9 @@ class LogoutControllerTest extends TestCase {
 	private $logger;
 	/** @var ISession  */
 	private $session;
+	private $eventDispatcher;
+	private $tokenProvider;
+	private $util;
 
 	public function setUp() {
 		$this->appName = 'impersonate';
@@ -56,7 +60,7 @@ class LogoutControllerTest extends TestCase {
 			->disableOriginalConstructor()
 			->getMock();
 		$this->userSession = $this->getMockBuilder(
-			'\OCP\IUserSession')
+			'\OC\User\Session')
 			->disableOriginalConstructor()
 			->getMock();
 		$this->logger = $this->getMockBuilder(
@@ -66,6 +70,8 @@ class LogoutControllerTest extends TestCase {
 		$this->session = $this->getMockBuilder('OCP\ISession')
 			->disableOriginalConstructor()
 			->getMock();
+		$this->tokenProvider = $this->createMock(\OC\Authentication\Token\DefaultTokenProvider::class);
+		$this->util = $this->createMock(\OCA\Impersonate\Util::class);
 
 		$this->controller = new LogoutController(
 			$this->appName,
@@ -73,8 +79,9 @@ class LogoutControllerTest extends TestCase {
 			$this->userManager,
 			$this->userSession,
 			$this->logger,
-			$this->session
-		);
+			$this->session,
+			$this->tokenProvider,
+			$this->util);
 
 		parent::setUp();
 	}
@@ -91,7 +98,7 @@ class LogoutControllerTest extends TestCase {
 	 * @param $userId
 	 */
 	public function  testImpersonateLogout($userId) {
-
+		$genericEvent = new GenericEvent(null, ['cancel' => false]);
 		if($userId === null) {
 			$this->session->expects($this->once())
 				->method('get')
@@ -102,10 +109,10 @@ class LogoutControllerTest extends TestCase {
 					'error' => "cannotLogout",
 					'message' => "Cannot logout"
 				], Http::STATUS_NOT_FOUND),
-				$this->controller->logoutcontroller()
+				$this->controller->logoutcontroller($genericEvent)
 			);
 		} else {
-			$this->session->expects($this->once())
+			$this->session->expects($this->any())
 				->method('get')
 				->willReturn('impersonator');
 
@@ -115,9 +122,10 @@ class LogoutControllerTest extends TestCase {
 
 			$this->assertEquals(
 				new JSONResponse(),
-				$this->controller->logoutcontroller()
+				$this->controller->logoutcontroller($genericEvent)
 			);
 		}
 	}
+
 }
 

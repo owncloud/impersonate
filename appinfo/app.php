@@ -9,10 +9,11 @@
  * @copyright Jörn Friedrich Dreyer 2015
  */
 
-\OCP\App::registerAdmin('impersonate', 'settings-admin');
+
 
 if(\OC::$server->getSession()->get('impersonator') !== null) {
 	\OCP\Util::addScript('impersonate','impersonate_logout');
+	\OCP\Util::addScript('impersonate', 'templates/impersonateNotification.handlebars');
 	\OCP\Util::addStyle('impersonate', 'impersonate');
 }
 // --- register js for user management------------------------------------------
@@ -21,6 +22,25 @@ $eventDispatcher->addListener(
 	'OC\Settings\Users::loadAdditionalScripts',
 	function() {
 		\OCP\Util::addScript('impersonate', 'impersonate');
+		\OCP\Util::addScript('impersonate', 'templates/addImpersonateIcon.handlebars');
+		\OCP\Util::addScript('impersonate', 'templates/removeImpersonateIcon.handlebars');
 	}
 );
+$logoutController = new OCA\Impersonate\Controller\LogoutController(
+	'impersonate',
+	\OC::$server->getRequest(),
+	\OC::$server->getUserManager(),
+	OC::$server->getUserSession(),
+	OC::$server->getLogger(),
+	OC::$server->getSession(),
+	\OC::$server->query('\OC\Authentication\Token\DefaultTokenProvider'),
+	new \OCA\Impersonate\Util(
+		\OC::$server->getSession(),
+		\OC::$server->getUserSession(),
+		\OC::$server->getRequest(),
+		\OC::$server->query('\OC\Authentication\Token\DefaultTokenProvider')
+	)
+);
+$eventDispatcher->addListener('\OC\User\Session::pre_logout', [$logoutController, 'logoutcontroller']);
+
 

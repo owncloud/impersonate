@@ -1,6 +1,8 @@
 OC.L10N.register(
     "impersonate",
     {
+    "Can not impersonate" : "Не удаётся притвориться",
+    "Unexpected error occured" : "Произошла непредвиденная ошибка",
     "Impersonate" : "Притвориться",
     "Error" : "Ошибка",
     "Logged in as {currentUser}" : "Текущий вход под {currentUser}",

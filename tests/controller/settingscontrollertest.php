@@ -55,6 +55,8 @@ class SettingsControllerTest extends TestCase {
 	private $config;
 	/** @var  IL10N */
 	private $l;
+	private $defaultTokenProvider;
+	private $util;
 
 	public function setUp() {
 		$this->appName = 'impersonate';
@@ -85,6 +87,8 @@ class SettingsControllerTest extends TestCase {
 			->getMock();
 		$this->l = $this->getMockBuilder(IL10N::class)
 			->getMock();
+		$this->defaultTokenProvider = $this->createMock(\OC\Authentication\Token\DefaultTokenProvider::class);
+		$this->util = $this->createMock(\OCA\Impersonate\Util::class);
 
 		$this->controller = new SettingsController(
 			$this->appName,
@@ -96,7 +100,9 @@ class SettingsControllerTest extends TestCase {
 			$this->subAdmin,
 			$this->session,
 			$this->config,
-			$this->l
+			$this->l,
+			$this->defaultTokenProvider,
+			$this->util
 		);
 
 		parent::setUp();
@@ -159,10 +165,6 @@ class SettingsControllerTest extends TestCase {
 				->method('isAdmin')
 				->willReturn(true);
 
-			$this->userSession->expects($this->once())
-				->method('setUser')
-				->with($user);
-
 			$this->assertEquals(
 				new JSONResponse(),
 				$this->controller->impersonate($query)
@@ -180,10 +182,6 @@ class SettingsControllerTest extends TestCase {
 			$this->subAdmin->expects($this->any())
 				->method('isSubAdminofGroup')
 				->willReturn(true);
-
-			$this->userSession->expects($this->once())
-				->method('setUser')
-				->with($user);
 
 			$this->assertEquals(
 				new JSONResponse(),
