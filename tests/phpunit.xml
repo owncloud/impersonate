@@ -6,9 +6,11 @@
 		 timeoutForMediumTests="900"
 		 timeoutForLargeTests="900"
 		>
-	<testsuite name='ownCloud - Impersonate App Tests'>
-		<directory suffix='test.php'>.</directory>
-	</testsuite>
+	<testsuites>
+		<testsuite name='ownCloud - Impersonate App Tests'>
+			<directory suffix='Test.php'>.</directory>
+		</testsuite>
+	</testsuites>
 	<!-- filters for code coverage -->
 	<filter>
 		<whitelist>

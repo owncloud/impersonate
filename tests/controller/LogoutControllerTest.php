@@ -6,6 +6,7 @@
  * later. See the COPYING file.
  *
  * @author Jörn Friedrich Dreyer <jfd@owncloud.com>
+ * @author Sujith Haridasan <sharidasan@owncloud.com>
  * @copyright Jörn Friedrich Dreyer 2015
  */
 

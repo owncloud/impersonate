@@ -4,14 +4,29 @@ php:
   - 7.0
   - 7.1
 
+env:
+  global:
+    - CORE_BRANCH=master
+    - APP_NAME=impersonate
+  matrix:
+    - DB=sqlite
+
 before_install:
-  - cd ..
-  - git clone https://github.com/owncloud/core.git
-  - mv impersonate core/apps/
-  - cd core
-  - git submodule init
-  - git submodule update
-  - cd apps/impersonate/tests
+  - wget https://raw.githubusercontent.com/owncloud/administration/master/travis-ci/before_install.sh
+  - bash ./before_install.sh $APP_NAME $CORE_BRANCH $DB
+
+  # Add some output debugging information
+  - cd ../core
+  - ./occ check
+  - ./occ status
+  - ./occ app:list
 
 script:
-  - phpunit tests
+  - ./occ app:enable impersonate
+  - cd apps/$APP_NAME/tests
+
+  # Run PHPUnit tests
+  - ../../../lib/composer/bin/phpunit --configuration phpunit.xml
+
+after_success:
+  - bash <(curl -s https://codecov.io/bash)
