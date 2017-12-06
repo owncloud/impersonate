@@ -89,7 +89,7 @@
 				OC.generateUrl('apps/impersonate/user'),
 				{ target: target }
 			).done(function( result ) {
-				OC.redirect(OC.generateUrl('apps/files'));
+				OC.redirect(OC.generateUrl(''));
 			}).fail(function( result ) {
 				if((result.responseJSON.error === "userNeverLoggedIn") && (result.responseJSON.message.length > 0)) {
 					OC.dialogs.alert(result.responseJSON.message, t('impersonate', "Error"));
