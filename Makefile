@@ -66,6 +66,7 @@ ifdef CAN_SIGN
 		img \
 		js \
 		l10n \
+		lib \
 		templates \
 		build/$(appname)
 	$(sign) --path="$(CURDIR)/build/$(appname)"
