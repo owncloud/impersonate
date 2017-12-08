@@ -69,8 +69,8 @@ ifdef CAN_SIGN
 		lib \
 		templates \
 		build/$(appname)
-	$(sign) --path="$(CURDIR)/build/$(appname)"
 	rm -f build/$(appname)/js/templates/*.handlebars
+	$(sign) --path="$(CURDIR)/build/$(appname)"
 	tar -czf build/$(appname).tar.gz -C $(CURDIR)/build/$(appname) ../$(appname)
 else
 	@echo $(sign_skip_msg)
