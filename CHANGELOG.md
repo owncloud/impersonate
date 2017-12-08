@@ -4,15 +4,24 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
+## [Unreleased]
+
+### Added 
+
+### Changed
+
+### Fixed
+
+
 ## [0.1.2] - 2017-12-07
 
-## Changed
+### Changed
 - Moved impersonate Settings into User Authentication Section in Admin Panel [#54](https://github.com/owncloud/impersonate/pull/54)
 - View default app when impersonating a user [#88](https://github.com/owncloud/impersonate/pull/88)
 - Use precombiled handlebars for frontend templates [#42](https://github.com/owncloud/impersonate/pull/42)
 - Use core hooks for logout of impersonated users [#68](https://github.com/owncloud/impersonate/pull/68)
 
-## Fixed
+### Fixed
 - Impersonate not working with 10.0.4 [#80](https://github.com/owncloud/impersonate/pull/80)
 
 
