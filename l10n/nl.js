@@ -1,6 +1,7 @@
 OC.L10N.register(
     "impersonate",
     {
+    "Unexpected error occured" : "Onverwachte fout opgetreden",
     "Impersonate" : "Imiteren",
     "Error" : "Fout",
     "Logged in as {currentUser}" : "Ingelogd als {currentUser}",
