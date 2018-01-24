@@ -1,6 +1,7 @@
 OC.L10N.register(
     "impersonate",
     {
+    "Unexpected error occured" : "Óvænt villa átti sér stað",
     "Impersonate" : "Taka yfir notanda",
     "Error" : "Villa",
     "Logged in as {currentUser}" : "Skráður inn sem {currentUser}",
