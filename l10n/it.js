@@ -1,7 +1,9 @@
 OC.L10N.register(
     "impersonate",
     {
-    "Impersonate" : "Diventa un altro utente",
+    "Can not impersonate" : "Impossibile cambiare utente",
+    "Unexpected error occured" : "Errore inaspettato",
+    "Impersonate" : "Cambia utente",
     "Error" : "Errore",
     "Logged in as {currentUser}" : "Sei loggato come {currentUser}",
     "Impersonate Settings" : "Impostazioni impersonalizzazione",
