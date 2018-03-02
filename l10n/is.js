@@ -1,6 +1,7 @@
 OC.L10N.register(
     "impersonate",
     {
+    "Can not impersonate" : "Get ekki tekið yfir notanda",
     "Unexpected error occured" : "Óvænt villa átti sér stað",
     "Impersonate" : "Taka yfir notanda",
     "Error" : "Villa",
