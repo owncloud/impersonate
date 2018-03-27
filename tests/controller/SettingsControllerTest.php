@@ -17,6 +17,7 @@ use OCA\Impersonate\Controller\SettingsController;
 use OCP\AppFramework\Http\JSONResponse;
 use OCP\AppFramework\Http;
 use OCP\IAppConfig;
+use OCP\IGroup;
 use OCP\IGroupManager;
 use OCP\IL10N;
 use OCP\IRequest;
@@ -176,9 +177,15 @@ class SettingsControllerTest extends TestCase {
 				->with('impersonate','impersonate_include_groups_list',"")
 				->willReturn(json_encode([$group]));
 
-			$this->groupManger->expects($this->once())
+			$iGroup = $this->createMock(IGroup::class);
+			$iGroup->expects($this->any())
+				->method('inGroup')
+				->willReturn(true);
+
+			$this->groupManger->expects($this->any())
 				->method('get')
-				->willReturn($this->createMock('OCP\IGroup'));
+				->willReturn($iGroup);
+
 
 			$this->subAdmin->expects($this->any())
 				->method('isSubAdminofGroup')
@@ -209,13 +216,76 @@ class SettingsControllerTest extends TestCase {
 		}
 	}
 
-	public function normalUsers() {
-		return [
-			['username', 'username'],
-			['UserName', 'username']
-		];
+	/**
+	 * Negative test to verify a scenario:
+	 * 1) Login as group admin
+	 * 2) Try to impersonate a user who is not part of
+	 * the group which is owned by group admin
+	 */
+	public function testUserNotPartOfGroup() {
+		$user = $this->createMock('\OCP\IUser');
+
+		$this->userSession
+			->method('getUser')
+			->willReturn($user);
+
+		$user->method('getUID')
+			->willReturn('username');
+
+		$this->userManager->expects($this->atLeastOnce())
+			->method('get')
+			->with('Username')
+			->willReturn($user);
+
+		$user->expects($this->once())
+			->method('getLastLogin')
+			->willReturn(1);
+
+		$this->config->expects($this->once())
+			->method('getValue')
+			->with('impersonate','impersonate_include_groups_list',"")
+			->willReturn(json_encode(['testgroup']));
+
+		$iGroup = $this->createMock(IGroup::class);
+		$iGroup->expects($this->any())
+			->method('inGroup')
+			->willReturn(true);
+
+		$this->groupManger->expects($this->any())
+			->method('get')
+			->willReturn($iGroup);
+
+
+		$this->subAdmin->expects($this->any())
+			->method('isSubAdminofGroup')
+			->willReturn(false);
+
+		$this->assertEquals(
+			new JSONResponse([
+				'error' => 'cannotImpersonate',
+				'message' => $this->l->t('Can not impersonate'),
+			], http::STATUS_NOT_FOUND),
+			$this->controller->impersonate('Username')
+		);
 	}
 
+	/**
+	 * When there is no user logged in or if the session is null,
+	 * then no impersonation should be done. This test validates it.
+	 */
+	public function testNullUserSession() {
+		$this->userSession
+			->method('getUser')
+			->willReturn(null);
+
+		$this->assertEquals(
+			new JSONResponse([
+				'error' => 'cannotImpersonate',
+				'message' => $this->l->t('Can not impersonate'),
+			], http::STATUS_NOT_FOUND),
+			$this->controller->impersonate('foo')
+		);
+	}
 
 	public function neverLoggedIn() {
 		return [
@@ -334,6 +404,59 @@ class SettingsControllerTest extends TestCase {
 			'message' => $this->l->t("Can not impersonate")
 		], http::STATUS_NOT_FOUND),
 		$this->controller->impersonate('bar'));
+	}
+
+	/**
+	 * @dataProvider providesGetDataForImpersonateApp
+	 */
+	public function testGetDataForImpersonateApp($enabled, $includedGroups, $currentUser, $isAdmin = false, $isSubAdmin = false) {
+		$map = [
+			['impersonate','impersonate_include_groups',false, $enabled],
+			['impersonate','impersonate_include_groups_list', '[]', $includedGroups]
+		];
+		$this->config
+			->method('getValue')
+			->will($this->returnValueMap($map));
+
+		$user = $this->createMock('\OCP\IUser');
+		$this->userSession
+			->method('getUser')
+			->willReturn($user);
+		if ($currentUser === null) {
+			$this->assertEquals(
+				new JSONResponse([
+					$includedGroups, $enabled, false, false
+				]),
+				$this->controller->getDataForImpersonateApp('test')
+			);
+		} else {
+			$user->expects($this->once())
+				->method('getUID')
+				->willReturn($currentUser);
+			$this->groupManger
+				->method('isAdmin')
+				->willReturn($isAdmin);
+			$this->subAdmin
+				->method('isSubAdmin')
+				->willReturn($isSubAdmin);
+			$this->assertEquals(
+				new JSONResponse([
+					$includedGroups, $enabled, $isAdmin, $isSubAdmin
+				]),
+				$this->controller->getDataForImpersonateApp('test')
+			);
+		}
+	}
+
+	public function providesGetDataForImpersonateApp() {
+		return [
+			[true, ['hello', 'world'], null],
+			[true, ['hello', 'world'], 'user', true, true],
+			[true, ['hello', 'world'], 'user', true, false],
+			[true, ['hello', 'world'], 'user', false, true],
+			[false, ['hello', 'world'], 'user', false, true],
+			[false, [], 'user', false, true],
+		];
 	}
 }
 
