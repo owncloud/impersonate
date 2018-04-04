@@ -12,9 +12,7 @@
 namespace OCA\Impersonate\Controller;
 
 use OC\Authentication\Token\DefaultTokenProvider;
-use OC\Group\Manager;
 use OC\SubAdmin;
-use OC\User\User;
 use OCA\Impersonate\Util;
 use OCP\AppFramework\Http;
 use OCP\AppFramework\Http\JSONResponse;
@@ -25,7 +23,6 @@ use OCP\ILogger;
 use OCP\IRequest;
 use OCP\AppFramework\Controller;
 use OCP\ISession;
-use OCP\IUser;
 use OCP\IUserManager;
 use OCP\IUserSession;
 
@@ -52,7 +49,7 @@ class SettingsController extends Controller {
 	private $tokenProvider;
 	/** @var \OC\User\Session  */
 	private $ocUserSession;
-	/** @var Util  */
+	/** @var \OCA\Impersonate\Util  */
 	private $util;
 
 	/**
@@ -96,11 +93,16 @@ class SettingsController extends Controller {
 	 */
 	public function getDataForImpersonateApp() {
 		$isEnabled = $this->config->getValue('impersonate','impersonate_include_groups',false);
-		$includedGroups = $this->config->getValue('impersonate','impersonate_include_groups_list',"[]");
+		$includedGroups = $this->config->getValue('impersonate','impersonate_include_groups_list','[]');
+		$currentUser = $this->userSession->getUser();
+		if ($currentUser === null) {
+			return new JSONResponse([$includedGroups, $isEnabled,
+				false, false]);
+		}
 
 		return new JSONResponse([$includedGroups, $isEnabled,
-			$this->groupManager->isAdmin($this->userSession->getUser()->getUID()),
-			$this->subAdmin->isSubAdmin($this->userSession->getUser())]);
+			$this->groupManager->isAdmin($currentUser->getUID()),
+			$this->subAdmin->isSubAdmin($currentUser)]);
 	}
 
 	/**
@@ -111,14 +113,24 @@ class SettingsController extends Controller {
 	 * @return JSONResponse
 	 */
 	public function impersonate($target) {
-		$impersonator = $this->userSession->getUser()->getUID();
+		$currentUser = $this->userSession->getUser();
+
+		//If there is no current user don't impersonate
+		if ($currentUser === null) {
+			return new JSONResponse([
+				'error' => 'cannotImpersonate',
+				'message' => $this->l->t('Can not impersonate'),
+			], http::STATUS_NOT_FOUND);
+		}
+
+		$impersonator = $currentUser->getUID();
 
 		if ($this->session->get('impersonator') === null) {
 			$this->session->set('impersonator', $impersonator);
 		} else {
 			return new JSONResponse([
 				'error' => 'stopNestedImpersonation',
-				'message' => $this->l->t("Can not impersonate"),
+				'message' => $this->l->t('Can not impersonate'),
 			], http::STATUS_NOT_FOUND);
 		}
 
@@ -128,38 +140,39 @@ class SettingsController extends Controller {
 			$this->session->remove('impersonator');
 			return new JSONResponse([
 				'error' => 'userNotFound',
-				'message' => $this->l->t("Unexpected error occured"),
+				'message' => $this->l->t('Unexpected error occured'),
 			], Http::STATUS_NOT_FOUND);
 		} elseif ($user->getLastLogin() === 0) {
 			// It's a first time login
 			$this->logger->info("User $target did not logged in yet. User $impersonator cannot impersonate $target");
 			$this->session->remove('impersonator');
 			return new JSONResponse([
-				'error' => "userNeverLoggedIn",
-				'message' => $this->l->t("Can not impersonate"),
+				'error' => 'userNeverLoggedIn',
+				'message' => $this->l->t('Can not impersonate'),
 			], http::STATUS_NOT_FOUND);
 		} elseif ($this->groupManager->isAdmin($target) && !$this->groupManager->isAdmin($impersonator)) {
 			// If not an admin then no impersonation
 			$this->logger->warning('Can not allow user "' . $impersonator . '" trying to impersonate "'. $target . '"');
 			$this->session->remove('impersonator');
 			return new JSONResponse([
-				'error' => "cannotImpersonateAdminUser",
-				'message' => $this->l->t("Can not impersonate"),
+				'error' => 'cannotImpersonateAdminUser',
+				'message' => $this->l->t('Can not impersonate'),
 			], http::STATUS_NOT_FOUND);
 		} else {
 
-			if ($this->groupManager->isAdmin($this->userSession->getUser()->getUID())) {
+			if ($this->groupManager->isAdmin($currentUser->getUID())) {
 				$this->logger->info("User $impersonator impersonated user $target", ['app' => 'impersonate']);
 				$this->util->switchUser($user, $impersonator);
 				return new JSONResponse();
 			}
 
-			$includedGroups = $this->config->getValue('impersonate','impersonate_include_groups_list',"");
-			if ($includedGroups !== "") {
+			$includedGroups = $this->config->getValue('impersonate','impersonate_include_groups_list','');
+			if ($includedGroups !== '') {
 				$includedGroups = json_decode($includedGroups);
 
 				foreach ($includedGroups as $group) {
-					if($this->subAdmin->isSubAdminofGroup($this->userSession->getUser(), $this->groupManager->get($group))) {
+					if($this->groupManager->get($group)->inGroup($user)
+						&& $this->subAdmin->isSubAdminofGroup($this->userSession->getUser(), $this->groupManager->get($group))) {
 						$this->logger->info("User $impersonator impersonated user $target", ['app' => 'impersonate']);
 						$this->util->switchUser($user, $impersonator);
 						return new JSONResponse();
@@ -169,8 +182,8 @@ class SettingsController extends Controller {
 
 			$this->session->remove('impersonator');
 			return new JSONResponse([
-				'error' => "cannotImpersonate",
-				'message' => $this->l->t("Can not impersonate"),
+				'error' => 'cannotImpersonate',
+				'message' => $this->l->t('Can not impersonate'),
 			], http::STATUS_NOT_FOUND);
 		}
 	}
