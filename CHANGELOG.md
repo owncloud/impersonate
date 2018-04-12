@@ -4,13 +4,10 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
-## [Unreleased]
-
-### Added 
+## [0.2.0]
 
 ### Changed
-
-### Fixed
+- Group admins can only impersonate members of the same group [#99](https://github.com/owncloud/impersonate/pull/99)
 
 
 ## [0.1.2] - 2017-12-07
@@ -18,7 +15,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 ### Changed
 - Moved impersonate Settings into User Authentication Section in Admin Panel [#54](https://github.com/owncloud/impersonate/pull/54)
 - View default app when impersonating a user [#88](https://github.com/owncloud/impersonate/pull/88)
-- Use precombiled handlebars for frontend templates [#42](https://github.com/owncloud/impersonate/pull/42)
+- Use precompiled handlebars for frontend templates [#42](https://github.com/owncloud/impersonate/pull/42)
 - Use core hooks for logout of impersonated users [#68](https://github.com/owncloud/impersonate/pull/68)
 
 ### Fixed
@@ -76,3 +73,7 @@ owncloud-impersonate (0.0.2)
 
 owncloud-impersonate (0.0.1)
 * First release
+
+[0.2.0]: https://github.com/owncloud/impersonate/compare/v0.1.2...v0.2.0
+[0.1.2]: https://github.com/owncloud/impersonate/compare/v0.1.1...v0.1.2
+[0.1.1]: https://github.com/owncloud/impersonate/compare/v0.1.0...v0.1.1
