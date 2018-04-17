@@ -4,11 +4,12 @@
 	<name>Impersonate</name>
 	<summary>Provide assistance by logging in as another user</summary>
 	<description>
-The Impersonate application allows administrators to log in as another user within the ownCloud instance.
-This provides a helpdesk-like experience and can for example be useful to help users with configuration issues, to get a better understanding of what they see when they use their ownCloud account or to conduct actions in legacy accounts. 
-Once Impersonate is installed a new column will be available in the user management panel. Simply click on the icon next to the user that you want to impersonate and you will be logged in as that user. Your current session will be temporarily suspended and you will see a notification at the top of the page that confirms and reminds that you’re impersonating another user. Once you’re done, log out and you will return to your previous user session.
-As a security measure, the application lets ownCloud administrators restrict the ability to impersonate users in certain groups. When enabled and configured, only a group’s administrator can impersonate members of their group.
-Administrators can find configuration options in the 'User Authentication" section of the admin settings panel.</description>
+The Impersonate application allows administrators, and group admins, to log in as another user within an ownCloud instance. It provides a helpdesk-like experience and can be useful to help users with configuration issues, to get a better understanding of what they see when they use their ownCloud account, or to perform actions in legacy accounts.
+
+Once Impersonate is installed, a new column will be available in the user management panel. Click on the icon next to the user that you want to impersonate and you will be logged in as that user. Your current session will be temporarily suspended, and you will see a notification at the top of the page reminding you that you’re impersonating another user. Once you’re finished, log out, and you will return to your previous user session.
+
+As a security measure, the application lets ownCloud administrators restrict the ability to impersonate users in specific groups. When enabled and configured, only a group’s administrator can impersonate members of their group. Administrators can find configuration options in the "User Authentication" section of the "Admin settings" panel.
+</description>
 	<licence>AGPL</licence>
 	<author>Jörn Friedrich Dreyer</author>
 	<version>0.1.2</version>
