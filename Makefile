@@ -57,7 +57,6 @@ clean-templates:
 # build source package
 #
 build-src:
-ifdef CAN_SIGN
 	mkdir -p build/$(appname)
 	cp --parents -r \
 		appinfo \
@@ -70,11 +69,12 @@ ifdef CAN_SIGN
 		templates \
 		build/$(appname)
 	rm -f build/$(appname)/js/templates/*.handlebars
+ifdef CAN_SIGN
 	$(sign) --path="$(CURDIR)/build/$(appname)"
-	tar -czf build/$(appname).tar.gz -C $(CURDIR)/build/$(appname) ../$(appname)
 else
 	@echo $(sign_skip_msg)
 endif
+	tar -czf build/$(appname).tar.gz -C $(CURDIR)/build/$(appname) ../$(appname)
 
 .PHONY: clean
 clean-build:
