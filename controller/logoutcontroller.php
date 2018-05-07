@@ -81,9 +81,20 @@ class LogoutController extends Controller {
 				'message' => "Cannot logout"
 			], Http::STATUS_NOT_FOUND);
 		} else {
+			//Get the current user
+			$currentUser = $this->userSession->getUser();
+			if ($currentUser === null) {
+				return new JSONResponse([
+					'error' => 'currentUserUnavailable',
+					'message' => 'Cannot logout'
+				]);
+			}
+			$currentUser = $currentUser->getUID();
 			$this->util->switchUser($impersonatorUser, null);
+			$stopEvent = new GenericEvent(null, ['impersonator' => $impersonator, 'targetUser' => $currentUser]);
 			$this->logger->info("Switching back to previous user $impersonator", ['app' => 'impersonate']);
 			$event->setArgument('cancel', true);
+			$this->eventDispatcher->dispatch('user.afterimpersonatelogout', $stopEvent);
 		}
 
 		return new JSONResponse();

@@ -26,6 +26,7 @@ use OCP\IUserManager;
 use OCP\IUserSession;
 use OCP\ISession;
 use OC\Group\Backend;
+use Symfony\Component\EventDispatcher\GenericEvent;
 use Test\TestCase;
 
 /**
@@ -191,10 +192,22 @@ class SettingsControllerTest extends TestCase {
 				->method('isSubAdminofGroup')
 				->willReturn(true);
 
+			$calledAfterImpersonate = [];
+			\OC::$server->getEventDispatcher()->addListener('user.afterimpersonate',
+				function (GenericEvent $event) use (&$calledAfterImpersonate) {
+					$calledAfterImpersonate[] = 'user.afterimpersonate';
+					$calledAfterImpersonate[] = $event;
+				});
 			$this->assertEquals(
 				new JSONResponse(),
 				$this->controller->impersonate($query)
 			);
+			$this->assertEquals('user.afterimpersonate', $calledAfterImpersonate[0]);
+			$this->assertInstanceOf(GenericEvent::class, $calledAfterImpersonate[1]);
+			$this->assertArrayHasKey('impersonator', $calledAfterImpersonate[1]);
+			$this->assertArrayHasKey('targetUser', $calledAfterImpersonate[1]);
+			$this->assertEquals('username', $calledAfterImpersonate[1]->getArgument('impersonator'));
+			$this->assertEquals('Username', $calledAfterImpersonate[1]->getArgument('targetUser'));
 
 		} elseif ($group === 'normaluser') {
 			$this->config->expects($this->once())
