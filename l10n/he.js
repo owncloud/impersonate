@@ -9,4 +9,4 @@ OC.L10N.register(
     "Impersonate Settings" : "הגדרות התחזות",
     "Allow group admins to impersonate users from these groups" : "לאפשר למנהלי קבוצות להתחזות למשתמשים של קבוצות אלו"
 },
-"nplurals=2; plural=(n != 1);");
+"nplurals=4; plural=(n==1 ? 1: n == 2 ? 2 : (n % 10 == 0 and n > 10) ? 4);");
