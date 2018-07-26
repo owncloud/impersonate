@@ -19,6 +19,7 @@ use OCP\AppFramework\Http;
 use OCP\IGroupManager;
 use OCP\IRequest;
 use OCP\ILogger;
+use OCP\IUser;
 use OCP\IUserManager;
 use OCP\IUserSession;
 use OC\Group\Backend;
@@ -117,16 +118,59 @@ class LogoutControllerTest extends TestCase {
 				->method('get')
 				->willReturn('impersonator');
 
-			$this->userManager->expects($this->once())
+			$currentUser = $this->createMock(IUser::class);
+			$this->userManager->expects($this->any())
 				->method('get')
 				->willReturn($this->createMock('OCP\IUser'));
+			$this->userSession->expects($this->any())
+				->method('getUser')
+				->willReturn($currentUser);
+			$currentUser->expects($this->any())
+				->method('getUID')
+				->willReturn('foo');
 
+			$calledAfterLogout = [];
+			\OC::$server->getEventDispatcher()->addListener('user.afterimpersonatelogout',
+				function (GenericEvent $event) use (&$calledAfterLogout) {
+					$calledAfterLogout[] = 'user.afterimpersonatelogout';
+					$calledAfterLogout[] = $event;
+				});
 			$this->assertEquals(
 				new JSONResponse(),
 				$this->controller->logoutcontroller($genericEvent)
 			);
+			$this->assertEquals('user.afterimpersonatelogout', $calledAfterLogout[0]);
+			$this->assertInstanceOf(GenericEvent::class, $calledAfterLogout[1]);
+			$this->assertArrayHasKey('impersonator', $calledAfterLogout[1]);
+			$this->assertArrayHasKey('targetUser', $calledAfterLogout[1]);
+			$this->assertEquals('impersonator', $calledAfterLogout[1]->getArgument('impersonator'));
+			$this->assertEquals('foo', $calledAfterLogout[1]->getArgument('targetUser'));
 		}
 	}
 
+	/**
+	 * Test to verify if the current user session is not there then no logout
+	 */
+	public function testMissingCurrentUserSession() {
+		$genericEvent = new GenericEvent(null, ['cancel' => false]);
+		$this->session->expects($this->any())
+			->method('get')
+			->willReturn('impersonator');
+
+		$this->userManager->expects($this->any())
+			->method('get')
+			->willReturn($this->createMock('OCP\IUser'));
+		$this->userSession->expects($this->any())
+			->method('getUser')
+			->willReturn(null);
+
+		$this->assertEquals(
+			new JSONResponse([
+				'error' => 'currentUserUnavailable',
+				'message' => 'Cannot logout'
+			]),
+			$this->controller->logoutcontroller($genericEvent)
+		);
+	}
 }
 

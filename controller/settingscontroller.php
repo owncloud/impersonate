@@ -25,6 +25,8 @@ use OCP\AppFramework\Controller;
 use OCP\ISession;
 use OCP\IUserManager;
 use OCP\IUserSession;
+use Symfony\Component\EventDispatcher\EventDispatcher;
+use Symfony\Component\EventDispatcher\GenericEvent;
 
 
 class SettingsController extends Controller {
@@ -51,6 +53,8 @@ class SettingsController extends Controller {
 	private $ocUserSession;
 	/** @var \OCA\Impersonate\Util  */
 	private $util;
+	/** @var EventDispatcher  */
+	private $eventDispatcher;
 
 	/**
 	 * SettingsController constructor.
@@ -83,6 +87,7 @@ class SettingsController extends Controller {
 		$this->tokenProvider = $tokenProvider;
 		$this->ocUserSession = \OC::$server->getUserSession();
 		$this->util = new Util($this->session, $this->ocUserSession, $this->request, $tokenProvider);
+		$this->eventDispatcher = \OC::$server->getEventDispatcher();
 	}
 
 	/**
@@ -163,6 +168,8 @@ class SettingsController extends Controller {
 			if ($this->groupManager->isAdmin($currentUser->getUID())) {
 				$this->logger->info("User $impersonator impersonated user $target", ['app' => 'impersonate']);
 				$this->util->switchUser($user, $impersonator);
+				$startEvent = new GenericEvent(null, ['impersonator' => $impersonator, 'targetUser' => $target]);
+				$this->eventDispatcher->dispatch('user.afterimpersonate', $startEvent);
 				return new JSONResponse();
 			}
 
@@ -175,6 +182,8 @@ class SettingsController extends Controller {
 						&& $this->subAdmin->isSubAdminofGroup($this->userSession->getUser(), $this->groupManager->get($group))) {
 						$this->logger->info("User $impersonator impersonated user $target", ['app' => 'impersonate']);
 						$this->util->switchUser($user, $impersonator);
+						$startEvent = new GenericEvent(null, ['impersonator' => $impersonator, 'targetUser' => $target]);
+						$this->eventDispatcher->dispatch('user.afterimpersonate', $startEvent);
 						return new JSONResponse();
 					}
 				}
