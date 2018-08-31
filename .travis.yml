@@ -24,6 +24,8 @@ matrix:
           env: DB=sqlite CORE_BRANCH=master
         - php: 7.2
           env: DB=sqlite CORE_BRANCH=master
+        - php: 7.2
+          env: DB=sqlite
 
 before_install:
   - wget https://raw.githubusercontent.com/owncloud/administration/master/travis-ci/before_install.sh
