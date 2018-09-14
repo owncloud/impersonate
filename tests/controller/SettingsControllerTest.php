@@ -179,13 +179,14 @@ class SettingsControllerTest extends TestCase {
 				->willReturn(json_encode([$group]));
 
 			$iGroup = $this->createMock(IGroup::class);
-			$iGroup->expects($this->any())
-				->method('inGroup')
-				->willReturn(true);
 
 			$this->groupManger->expects($this->any())
 				->method('get')
 				->willReturn($iGroup);
+
+			$this->groupManger->expects($this->any())
+				->method('isInGroup')
+				->willReturn(true);
 
 
 			$this->subAdmin->expects($this->any())
@@ -260,13 +261,14 @@ class SettingsControllerTest extends TestCase {
 			->willReturn(json_encode(['testgroup']));
 
 		$iGroup = $this->createMock(IGroup::class);
-		$iGroup->expects($this->any())
-			->method('inGroup')
-			->willReturn(true);
 
 		$this->groupManger->expects($this->any())
 			->method('get')
 			->willReturn($iGroup);
+
+		$this->groupManger->expects($this->any())
+			->method('isInGroup')
+			->willReturn(true);
 
 
 		$this->subAdmin->expects($this->any())
@@ -311,9 +313,6 @@ class SettingsControllerTest extends TestCase {
 			->willReturn(json_encode(['testgroup','testgroup2']));
 
 		$iGroup = $this->createMock(IGroup::class);
-		$iGroup->expects($this->any())
-			->method('inGroup')
-			->willReturn(true);
 
 		$this->groupManger->expects($this->any())
 			->method('get')
@@ -325,6 +324,15 @@ class SettingsControllerTest extends TestCase {
 				)
 			);
 
+		$this->groupManger->expects($this->any())
+			->method('isInGroup')
+			->will(
+				$this->returnValueMap([
+						['username','testgroup', false],
+						['username','testgroup2', true]
+					]
+				)
+			);
 
 		$this->subAdmin->expects($this->any())
 			->method('isSubAdminofGroup')

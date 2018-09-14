@@ -178,7 +178,7 @@ class SettingsController extends Controller {
 				$includedGroups = json_decode($includedGroups);
 
 				foreach ($includedGroups as $group) {
-					if($this->groupManager->get($group)->inGroup($user)
+					if($this->groupManager->isInGroup($user->getUID(), $group)
 						&& $this->subAdmin->isSubAdminofGroup($this->userSession->getUser(), $this->groupManager->get($group))) {
 						$this->logger->info("User $impersonator impersonated user $target", ['app' => 'impersonate']);
 						$this->util->switchUser($user, $impersonator);
