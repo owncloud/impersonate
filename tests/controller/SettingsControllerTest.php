@@ -283,6 +283,73 @@ class SettingsControllerTest extends TestCase {
 	}
 
 	/**
+	 * Test to verify, that a vanished group will not break impersonation
+	 * https://github.com/owncloud/impersonate/issues/118
+	 */
+	public function testWronglyConfiguredGroupListAllowsImpersonation() {
+		$user = $this->createMock('\OCP\IUser');
+
+		$this->userSession
+			->method('getUser')
+			->willReturn($user);
+
+		$user->method('getUID')
+			->willReturn('username');
+
+		$this->userManager->expects($this->atLeastOnce())
+			->method('get')
+			->with('Username')
+			->willReturn($user);
+
+		$user->expects($this->once())
+			->method('getLastLogin')
+			->willReturn(1);
+
+		$this->config->expects($this->once())
+			->method('getValue')
+			->with('impersonate','impersonate_include_groups_list',"")
+			->willReturn(json_encode(['testgroup','testgroup2']));
+
+		$iGroup = $this->createMock(IGroup::class);
+		$iGroup->expects($this->any())
+			->method('inGroup')
+			->willReturn(true);
+
+		$this->groupManger->expects($this->any())
+			->method('get')
+			->will(
+				$this->returnValueMap([
+					['testgroup', null],
+					['testgroup2', $iGroup]
+					]
+				)
+			);
+
+
+		$this->subAdmin->expects($this->any())
+			->method('isSubAdminofGroup')
+			->willReturn(true);
+
+		$calledAfterImpersonate = [];
+		\OC::$server->getEventDispatcher()->addListener('user.afterimpersonate',
+			function (GenericEvent $event) use (&$calledAfterImpersonate) {
+				$calledAfterImpersonate[] = 'user.afterimpersonate';
+				$calledAfterImpersonate[] = $event;
+			});
+		$this->assertEquals(
+			new JSONResponse(),
+			$this->controller->impersonate('Username')
+		);
+		$this->assertEquals('user.afterimpersonate', $calledAfterImpersonate[0]);
+		$this->assertInstanceOf(GenericEvent::class, $calledAfterImpersonate[1]);
+		$this->assertArrayHasKey('impersonator', $calledAfterImpersonate[1]);
+		$this->assertArrayHasKey('targetUser', $calledAfterImpersonate[1]);
+		$this->assertEquals('username', $calledAfterImpersonate[1]->getArgument('impersonator'));
+		$this->assertEquals('Username', $calledAfterImpersonate[1]->getArgument('targetUser'));
+
+	}
+
+	/**
 	 * When there is no user logged in or if the session is null,
 	 * then no impersonation should be done. This test validates it.
 	 */
