@@ -42,5 +42,24 @@ $logoutController = new OCA\Impersonate\Controller\LogoutController(
 	)
 );
 $eventDispatcher->addListener('\OC\User\Session::pre_logout', [$logoutController, 'logoutcontroller']);
+$eventDispatcher->addListener('group.postDelete', function (\Symfony\Component\EventDispatcher\GenericEvent $event) {
+	$includeGroupList = \OC::$server->getConfig()->getAppValue('impersonate', 'impersonate_include_groups_list',[]);
+	$groupObject = $event->getSubject();
+	$gid = $groupObject->getGID();
+	$includeGroupList = \json_decode($includeGroupList);
+	$index = \array_search($gid, $includeGroupList, true);
+	if ($index !== false) {
+		unset($includeGroupList[$index]);
+	}
+	\OC::$server->getConfig()->setAppValue('impersonate', 'impersonate_include_groups_list', json_encode($includeGroupList));
+});
 
-
+$eventDispatcher->addListener('guest.grouprename', function (\Symfony\Component\EventDispatcher\GenericEvent $event) {
+	$includeGroupList = \OC::$server->getConfig()->getAppValue('impersonate', 'impersonate_include_groups_list',[]);
+	$includeGroupList = \json_decode($includeGroupList);
+	$index = \array_search($event->getArgument('oldgroupname'), $includeGroupList, true);
+	if ($index !== false) {
+		unset($includeGroupList[$index]);
+	}
+	\OC::$server->getConfig()->setAppValue('impersonate', 'impersonate_include_groups_list', json_encode($includeGroupList));
+});
