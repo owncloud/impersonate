@@ -11,8 +11,8 @@ Once Impersonate is installed, a new column will be available in the user manage
 As a security measure, the application lets ownCloud administrators restrict the ability to impersonate users in specific groups. When enabled and configured, only a group’s administrator can impersonate members of their group. Administrators can find configuration options in the "User Authentication" section of the "Admin settings" panel.
 </description>
 	<licence>AGPL</licence>
-	<author>Jörn Friedrich Dreyer</author>
-	<version>0.2.0</version>
+	<author>Jörn Friedrich Dreyer, Sujith Haridasan</author>
+	<version>0.3.0</version>
 	<documentation>
 	<admin>https://doc.owncloud.org/server/latest/admin_manual/issues/impersonate_users.html</admin>
 	</documentation>
