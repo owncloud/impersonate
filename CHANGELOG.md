@@ -4,7 +4,15 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
-## [Unreleased]
+## [0.3.0]
+### Added
+- PHP 7.2 support - [#115](https://github.com/owncloud/impersonate/pull/115)
+- Added Symfony event for impersonate action - [#109](https://github.com/owncloud/impersonate/pull/109)
+### Changed
+- Set max version to 10.1 because core is switching to semver - [#105](https://github.com/owncloud/impersonate/pull/105)
+### Fixes
+- Fix impersonate icon not displaying in some scenarios - [#114](https://github.com/owncloud/impersonate/pull/114)
+- Don't break when a non-existing group is mentionned in the config - [#119](https://github.com/owncloud/impersonate/pull/119)
 
 ## [0.2.0] - 2018-04-17
 
@@ -76,7 +84,7 @@ owncloud-impersonate (0.0.2)
 owncloud-impersonate (0.0.1)
 * First release
 
-[Unreleased]: https://github.com/owncloud/impersonate/compare/v0.2.0...HEAD
+[0.3.0]: https://github.com/owncloud/impersonate/compare/v0.2.0...v0.3.0
 [0.2.0]: https://github.com/owncloud/impersonate/compare/v0.1.2...v0.2.0
 [0.1.2]: https://github.com/owncloud/impersonate/compare/v0.1.1...v0.1.2
 [0.1.1]: https://github.com/owncloud/impersonate/compare/v0.1.0...v0.1.1
