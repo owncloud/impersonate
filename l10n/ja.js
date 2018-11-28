@@ -1,12 +1,12 @@
 OC.L10N.register(
     "impersonate",
     {
-    "Can not impersonate" : "コピーすることは出来ません",
+    "Can not impersonate" : "そのユーザーとしてはログインできません",
     "Unexpected error occured" : "予期しないエラーが発生しました",
-    "Impersonate" : "コピー",
+    "Impersonate" : "他のユーザーとしてログイン",
     "Error" : "エラー",
     "Logged in as {currentUser}" : " {currentUser}としてログインしました",
-    "Impersonate Settings" : "コピー設定",
-    "Allow group admins to impersonate users from these groups" : "グループ管理者がこれらのグループからユーザーをコピーするのを許可する"
+    "Impersonate Settings" : "他のユーザーとしてのログインの設定",
+    "Allow group admins to impersonate users from these groups" : "グループの管理者がこれらのグループのユーザーとしてログインすることを許可する"
 },
 "nplurals=1; plural=0;");
