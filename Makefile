@@ -66,6 +66,9 @@ build-src:
 		js \
 		l10n \
 		lib \
+		README.md \
+		LICENSE \
+		CHANGELOG.md \
 		templates \
 		build/$(appname)
 	rm -f build/$(appname)/js/templates/*.handlebars
