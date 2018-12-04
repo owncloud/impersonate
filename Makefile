@@ -34,11 +34,11 @@ dist: build-dep js-templates build-src
 %.js: $(template_src)
 		$(HANDLEBARS) -n "$(js_namespace)" $* -f $@
 
-build-dep:
-		make build-dep
+.PHONY: build-dep
+build-dep: node_modules
 
-build-dep: package.json
-		$(NPM) install --prefix $(NODE_PREFIX) && touch $@
+node_modules: package.json package-lock.json
+		$(NPM) install $(NODE_PREFIX) && touch $@
 
 PHONY: js-templates
 js-templates: $(addsuffix .js, $(template_src))
@@ -83,4 +83,4 @@ endif
 clean-build:
 		rm -fR build
 		rm -f $(addsuffix .js, $(template_src))
-		rm -fr $(NODE_PREFIX)/node_modules build-dep
+		rm -fr $(NODE_PREFIX)/node_modules
