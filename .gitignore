@@ -1,0 +1,10 @@
+build
+build-dep
+
+# just sane ignores
+js/templates/*.handlebars.js
+
+# test files
+clover.xml
+
+node_modules
