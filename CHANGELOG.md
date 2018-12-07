@@ -6,6 +6,12 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+## [0.4.0] - 2018-12-07
+
+### Changed
+
+- Set max version to 10 because core platform is switching to Semver
+
 ## [0.3.0] - 2018-11-08
 
 ### Added
@@ -88,7 +94,8 @@ owncloud-impersonate (0.0.2)
 owncloud-impersonate (0.0.1)
 * First release
 
-[Unreleased]: https://github.com/owncloud/impersonate/compare/v0.3.0...master
+[Unreleased]: https://github.com/owncloud/impersonate/compare/v0.4.0...master
+[0.4.0]: https://github.com/owncloud/impersonate/compare/v0.3.0...v0.4.0
 [0.3.0]: https://github.com/owncloud/impersonate/compare/v0.2.0...v0.3.0
 [0.2.0]: https://github.com/owncloud/impersonate/compare/v0.1.2...v0.2.0
 [0.1.2]: https://github.com/owncloud/impersonate/compare/v0.1.1...v0.1.2
