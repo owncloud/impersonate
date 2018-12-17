@@ -41,7 +41,6 @@ class UtilTest extends TestCase {
 	/** @var  Util */
 	private $util;
 	public function setUp() {
-
 		$this->session = $this->createMock(ISession::class);
 		$this->tokenProvider = $this->createMock(DefaultTokenProvider::class);
 		$this->userSession = $this->createMock(Session::class);
