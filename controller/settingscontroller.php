@@ -28,7 +28,6 @@ use OCP\IUserSession;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use Symfony\Component\EventDispatcher\GenericEvent;
 
-
 class SettingsController extends Controller {
 
 	/** @var IUserManager */
@@ -97,8 +96,8 @@ class SettingsController extends Controller {
 	 *  @return JSONResponse
 	 */
 	public function getDataForImpersonateApp() {
-		$isEnabled = $this->config->getValue('impersonate','impersonate_include_groups',false);
-		$includedGroups = $this->config->getValue('impersonate','impersonate_include_groups_list','[]');
+		$isEnabled = $this->config->getValue('impersonate', 'impersonate_include_groups', false);
+		$includedGroups = $this->config->getValue('impersonate', 'impersonate_include_groups_list', '[]');
 		$currentUser = $this->userSession->getUser();
 		if ($currentUser === null) {
 			return new JSONResponse([$includedGroups, $isEnabled,
@@ -164,7 +163,6 @@ class SettingsController extends Controller {
 				'message' => $this->l->t('Can not impersonate'),
 			], http::STATUS_NOT_FOUND);
 		} else {
-
 			if ($this->groupManager->isAdmin($currentUser->getUID())) {
 				$this->logger->info("User $impersonator impersonated user $target", ['app' => 'impersonate']);
 				$this->util->switchUser($user, $impersonator);
@@ -173,12 +171,12 @@ class SettingsController extends Controller {
 				return new JSONResponse();
 			}
 
-			$includedGroups = $this->config->getValue('impersonate','impersonate_include_groups_list','');
+			$includedGroups = $this->config->getValue('impersonate', 'impersonate_include_groups_list', '');
 			if ($includedGroups !== '') {
-				$includedGroups = json_decode($includedGroups);
+				$includedGroups = \json_decode($includedGroups);
 
 				foreach ($includedGroups as $group) {
-					if($this->groupManager->isInGroup($user->getUID(), $group)
+					if ($this->groupManager->isInGroup($user->getUID(), $group)
 						&& $this->subAdmin->isSubAdminofGroup($this->userSession->getUser(), $this->groupManager->get($group))) {
 						$this->logger->info("User $impersonator impersonated user $target", ['app' => 'impersonate']);
 						$this->util->switchUser($user, $impersonator);
@@ -197,4 +195,3 @@ class SettingsController extends Controller {
 		}
 	}
 }
-

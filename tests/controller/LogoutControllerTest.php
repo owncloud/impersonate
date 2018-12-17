@@ -99,9 +99,9 @@ class LogoutControllerTest extends TestCase {
 	 * @dataProvider userSessionData
 	 * @param $userId
 	 */
-	public function  testImpersonateLogout($userId) {
+	public function testImpersonateLogout($userId) {
 		$genericEvent = new GenericEvent(null, ['cancel' => false]);
-		if($userId === null) {
+		if ($userId === null) {
 			$this->session->expects($this->once())
 				->method('get')
 				->willReturn(null);
@@ -173,4 +173,3 @@ class LogoutControllerTest extends TestCase {
 		);
 	}
 }
-

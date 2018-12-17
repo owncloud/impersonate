@@ -25,8 +25,6 @@ use OCP\Settings\ISettings;
 use OCP\Template;
 
 class AdminPanel implements ISettings {
-
-
 	public function getPanel() {
 		$t = new Template('impersonate', 'settings-admin');
 		return $t;

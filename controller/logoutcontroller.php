@@ -16,21 +16,20 @@ use OCP\IUserSession;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use Symfony\Component\EventDispatcher\GenericEvent;
 
-
 class LogoutController extends Controller {
-    /** @var IUserManager */
-    private $userManager;
-    /** @var IUserSession */
-    private $userSession;
-    /** @var ILogger */
-    private $logger;
-    /** @var ISession  */
-    private $session;
-    /** @var EventDispatcher  */
-    private $eventDispatcher;
-    private $tokenProvider;
-    private $ocUserSession;
-    private $util;
+	/** @var IUserManager */
+	private $userManager;
+	/** @var IUserSession */
+	private $userSession;
+	/** @var ILogger */
+	private $logger;
+	/** @var ISession  */
+	private $session;
+	/** @var EventDispatcher  */
+	private $eventDispatcher;
+	private $tokenProvider;
+	private $ocUserSession;
+	private $util;
 
 	/**
 	 * LogoutController constructor.
@@ -46,7 +45,7 @@ class LogoutController extends Controller {
 	 * @param EventDispatcher $eventDispatcher
 	 */
 
-    public function __construct($appName, IRequest $request,IUserManager $userManager,
+	public function __construct($appName, IRequest $request,IUserManager $userManager,
 								IUserSession $userSession, ILogger $logger, ISession $session,
 								DefaultTokenProvider $tokenProvider, Util $util) {
 		parent::__construct($appName, $request);
@@ -59,12 +58,12 @@ class LogoutController extends Controller {
 		$this->util = $util;
 	}
 
-    /**
-     *  @NoAdminRequired
-     *
-     *  @UseSession
-     *  @return JSONResponse
-     */
+	/**
+	 *  @NoAdminRequired
+	 *
+	 *  @UseSession
+	 *  @return JSONResponse
+	 */
 	public function logoutcontroller(GenericEvent $event) {
 		$impersonator = $this->session->get('impersonator');
 		if ($impersonator === null) {
@@ -75,7 +74,7 @@ class LogoutController extends Controller {
 		}
 		$impersonatorUser = $this->userManager->get($impersonator);
 
-		if($impersonatorUser === null) {
+		if ($impersonatorUser === null) {
 			return new JSONResponse([
 				'error' => "cannotLogout",
 				'message' => "Cannot logout"
@@ -99,5 +98,4 @@ class LogoutController extends Controller {
 
 		return new JSONResponse();
 	}
-
 }

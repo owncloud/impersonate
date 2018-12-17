@@ -10,6 +10,7 @@
  */
 
 use OCP\AppFramework\App;
+
 $application = new App('impersonate');
 $application->registerRoutes(
 	$this,

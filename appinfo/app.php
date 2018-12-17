@@ -9,10 +9,8 @@
  * @copyright Jörn Friedrich Dreyer 2015
  */
 
-
-
-if(\OC::$server->getSession()->get('impersonator') !== null) {
-	\OCP\Util::addScript('impersonate','impersonate_logout');
+if (\OC::$server->getSession()->get('impersonator') !== null) {
+	\OCP\Util::addScript('impersonate', 'impersonate_logout');
 	\OCP\Util::addScript('impersonate', 'templates/impersonateNotification.handlebars');
 	\OCP\Util::addStyle('impersonate', 'impersonate');
 }
@@ -20,7 +18,7 @@ if(\OC::$server->getSession()->get('impersonator') !== null) {
 $eventDispatcher = \OC::$server->getEventDispatcher();
 $eventDispatcher->addListener(
 	'OC\Settings\Users::loadAdditionalScripts',
-	function() {
+	function () {
 		\OCP\Util::addScript('impersonate', 'impersonate');
 		\OCP\Util::addScript('impersonate', 'templates/addImpersonateIcon.handlebars');
 		\OCP\Util::addScript('impersonate', 'templates/removeImpersonateIcon.handlebars');
@@ -42,5 +40,3 @@ $logoutController = new OCA\Impersonate\Controller\LogoutController(
 	)
 );
 $eventDispatcher->addListener('\OC\User\Session::pre_logout', [$logoutController, 'logoutcontroller']);
-
-

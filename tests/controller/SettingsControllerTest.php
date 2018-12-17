@@ -175,8 +175,8 @@ class SettingsControllerTest extends TestCase {
 		} elseif ($group === 'groupadmin') {
 			$this->config->expects($this->once())
 				->method('getValue')
-				->with('impersonate','impersonate_include_groups_list',"")
-				->willReturn(json_encode([$group]));
+				->with('impersonate', 'impersonate_include_groups_list', "")
+				->willReturn(\json_encode([$group]));
 
 			$iGroup = $this->createMock(IGroup::class);
 
@@ -187,7 +187,6 @@ class SettingsControllerTest extends TestCase {
 			$this->groupManger->expects($this->any())
 				->method('isInGroup')
 				->willReturn(true);
-
 
 			$this->subAdmin->expects($this->any())
 				->method('isSubAdminofGroup')
@@ -209,11 +208,10 @@ class SettingsControllerTest extends TestCase {
 			$this->assertArrayHasKey('targetUser', $calledAfterImpersonate[1]);
 			$this->assertEquals('username', $calledAfterImpersonate[1]->getArgument('impersonator'));
 			$this->assertEquals('Username', $calledAfterImpersonate[1]->getArgument('targetUser'));
-
 		} elseif ($group === 'normaluser') {
 			$this->config->expects($this->once())
 				->method('getValue')
-				->with('impersonate','impersonate_include_groups_list',"")
+				->with('impersonate', 'impersonate_include_groups_list', "")
 				->willReturn("");
 
 			$this->groupManger->expects($this->any())
@@ -257,8 +255,8 @@ class SettingsControllerTest extends TestCase {
 
 		$this->config->expects($this->once())
 			->method('getValue')
-			->with('impersonate','impersonate_include_groups_list',"")
-			->willReturn(json_encode(['testgroup']));
+			->with('impersonate', 'impersonate_include_groups_list', "")
+			->willReturn(\json_encode(['testgroup']));
 
 		$iGroup = $this->createMock(IGroup::class);
 
@@ -269,7 +267,6 @@ class SettingsControllerTest extends TestCase {
 		$this->groupManger->expects($this->any())
 			->method('isInGroup')
 			->willReturn(true);
-
 
 		$this->subAdmin->expects($this->any())
 			->method('isSubAdminofGroup')
@@ -309,8 +306,8 @@ class SettingsControllerTest extends TestCase {
 
 		$this->config->expects($this->once())
 			->method('getValue')
-			->with('impersonate','impersonate_include_groups_list',"")
-			->willReturn(json_encode(['testgroup','testgroup2']));
+			->with('impersonate', 'impersonate_include_groups_list', "")
+			->willReturn(\json_encode(['testgroup','testgroup2']));
 
 		$iGroup = $this->createMock(IGroup::class);
 
@@ -354,7 +351,6 @@ class SettingsControllerTest extends TestCase {
 		$this->assertArrayHasKey('targetUser', $calledAfterImpersonate[1]);
 		$this->assertEquals('username', $calledAfterImpersonate[1]->getArgument('impersonator'));
 		$this->assertEquals('Username', $calledAfterImpersonate[1]->getArgument('targetUser'));
-
 	}
 
 	/**
@@ -427,7 +423,6 @@ class SettingsControllerTest extends TestCase {
 	 * @param $subadminUid
 	 */
 	public function testRestrictSwitchToAdminUser($adminUser, $adminUid, $subadminUser, $subadminUid) {
-
 		$user = $this->createMock('\OCP\IUser');
 		$user->method('getUID')
 			->willReturn($subadminUid);
@@ -547,4 +542,3 @@ class SettingsControllerTest extends TestCase {
 		];
 	}
 }
-
