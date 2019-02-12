@@ -23,6 +23,7 @@ use OCP\ILogger;
 use OCP\IRequest;
 use OCP\AppFramework\Controller;
 use OCP\ISession;
+use OCP\IUser;
 use OCP\IUserManager;
 use OCP\IUserSession;
 use Symfony\Component\EventDispatcher\EventDispatcher;
@@ -98,15 +99,35 @@ class SettingsController extends Controller {
 	public function getDataForImpersonateApp() {
 		$isEnabled = $this->config->getValue('impersonate', 'impersonate_include_groups', false);
 		$includedGroups = $this->config->getValue('impersonate', 'impersonate_include_groups_list', '[]');
+		$allowFullAccessSubAdmins = $this->config->getValue('impersonate', 'impersonate_all_groupadmins', false);
 		$currentUser = $this->userSession->getUser();
 		if ($currentUser === null) {
 			return new JSONResponse([$includedGroups, $isEnabled,
-				false, false]);
+				$allowFullAccessSubAdmins, false, false]);
 		}
 
 		return new JSONResponse([$includedGroups, $isEnabled,
+			$allowFullAccessSubAdmins,
 			$this->groupManager->isAdmin($currentUser->getUID()),
 			$this->subAdmin->isSubAdmin($currentUser)]);
+	}
+
+	/**
+	 * Impersonate the user
+	 * This method is called after the users capability to impersonate is decided
+	 * in the method impersonate($target).
+	 *
+	 * @param string $impersonator, the current user
+	 * @param string $target, the target user
+	 * @param IUser $user, target user object
+	 * @return JSONResponse
+	 */
+	private function impersonateUser($impersonator, $target, $user) {
+		$this->logger->info("User $impersonator impersonated user $target", ['app' => 'impersonate']);
+		$this->util->switchUser($user, $impersonator);
+		$startEvent = new GenericEvent(null, ['impersonator' => $impersonator, 'targetUser' => $target]);
+		$this->eventDispatcher->dispatch('user.afterimpersonate', $startEvent);
+		return new JSONResponse();
 	}
 
 	/**
@@ -164,25 +185,20 @@ class SettingsController extends Controller {
 			], http::STATUS_NOT_FOUND);
 		} else {
 			if ($this->groupManager->isAdmin($currentUser->getUID())) {
-				$this->logger->info("User $impersonator impersonated user $target", ['app' => 'impersonate']);
-				$this->util->switchUser($user, $impersonator);
-				$startEvent = new GenericEvent(null, ['impersonator' => $impersonator, 'targetUser' => $target]);
-				$this->eventDispatcher->dispatch('user.afterimpersonate', $startEvent);
-				return new JSONResponse();
+				return $this->impersonateUser($impersonator, $target, $user);
 			}
 
 			$includedGroups = $this->config->getValue('impersonate', 'impersonate_include_groups_list', '');
-			if ($includedGroups !== '') {
+			$allowSubAdminsImpersonate = $this->config->getValue('impersonate', 'impersonate_all_groupadmins', "false");
+			if ($allowSubAdminsImpersonate === "true") {
+				return $this->impersonateUser($impersonator, $target, $user);
+			} elseif ($includedGroups !== '') {
 				$includedGroups = \json_decode($includedGroups);
 
 				foreach ($includedGroups as $group) {
 					if ($this->groupManager->isInGroup($user->getUID(), $group)
 						&& $this->subAdmin->isSubAdminofGroup($this->userSession->getUser(), $this->groupManager->get($group))) {
-						$this->logger->info("User $impersonator impersonated user $target", ['app' => 'impersonate']);
-						$this->util->switchUser($user, $impersonator);
-						$startEvent = new GenericEvent(null, ['impersonator' => $impersonator, 'targetUser' => $target]);
-						$this->eventDispatcher->dispatch('user.afterimpersonate', $startEvent);
-						return new JSONResponse();
+						return $this->impersonateUser($impersonator, $target, $user);
 					}
 				}
 			}

@@ -22,6 +22,7 @@ use OCP\IGroupManager;
 use OCP\IL10N;
 use OCP\IRequest;
 use OCP\ILogger;
+use OCP\IUser;
 use OCP\IUserManager;
 use OCP\IUserSession;
 use OCP\ISession;
@@ -173,10 +174,12 @@ class SettingsControllerTest extends TestCase {
 				$this->controller->impersonate($query)
 			);
 		} elseif ($group === 'groupadmin') {
-			$this->config->expects($this->once())
+			$this->config
 				->method('getValue')
-				->with('impersonate', 'impersonate_include_groups_list', "")
-				->willReturn(\json_encode([$group]));
+				->will($this->returnValueMap([
+					['impersonate', 'impersonate_include_groups_list', "", \json_encode([$group])],
+					['impersonate', 'impersonate_all_groupadmins', "false", "false"]
+				]));
 
 			$iGroup = $this->createMock(IGroup::class);
 
@@ -209,10 +212,12 @@ class SettingsControllerTest extends TestCase {
 			$this->assertEquals('username', $calledAfterImpersonate[1]->getArgument('impersonator'));
 			$this->assertEquals('Username', $calledAfterImpersonate[1]->getArgument('targetUser'));
 		} elseif ($group === 'normaluser') {
-			$this->config->expects($this->once())
+			$this->config
 				->method('getValue')
-				->with('impersonate', 'impersonate_include_groups_list', "")
-				->willReturn("");
+				->will($this->returnValueMap([
+					['impersonate', 'impersonate_include_groups_list', "", ""],
+					['impersonate', 'impersonate_all_groupadmins', "false", "false"]
+				]));
 
 			$this->groupManger->expects($this->any())
 				->method('isAdmin')
@@ -253,10 +258,12 @@ class SettingsControllerTest extends TestCase {
 			->method('getLastLogin')
 			->willReturn(1);
 
-		$this->config->expects($this->once())
+		$this->config
 			->method('getValue')
-			->with('impersonate', 'impersonate_include_groups_list', "")
-			->willReturn(\json_encode(['testgroup']));
+			->will($this->returnValueMap([
+				['impersonate', 'impersonate_include_groups_list', "", \json_encode(['testgroup'])],
+				['impersonate', 'impersonate_all_groupadmins', "false", "false"]
+			]));
 
 		$iGroup = $this->createMock(IGroup::class);
 
@@ -304,10 +311,12 @@ class SettingsControllerTest extends TestCase {
 			->method('getLastLogin')
 			->willReturn(1);
 
-		$this->config->expects($this->once())
+		$this->config
 			->method('getValue')
-			->with('impersonate', 'impersonate_include_groups_list', "")
-			->willReturn(\json_encode(['testgroup','testgroup2']));
+			->will($this->returnValueMap([
+				['impersonate', 'impersonate_include_groups_list', "", \json_encode(['testgroup','testgroup2'])],
+				['impersonate', 'impersonate_all_groupadmins', "false", "false"]
+			]));
 
 		$iGroup = $this->createMock(IGroup::class);
 
@@ -492,23 +501,29 @@ class SettingsControllerTest extends TestCase {
 	/**
 	 * @dataProvider providesGetDataForImpersonateApp
 	 */
-	public function testGetDataForImpersonateApp($enabled, $includedGroups, $currentUser, $isAdmin = false, $isSubAdmin = false) {
+	public function testGetDataForImpersonateApp($enabled, $includedGroups, $allowAllSubadminGroups, $currentUser, $isAdmin = false, $isSubAdmin = false) {
 		$map = [
-			['impersonate','impersonate_include_groups',false, $enabled],
-			['impersonate','impersonate_include_groups_list', '[]', $includedGroups]
+			['impersonate','impersonate_include_groups', false, $enabled],
+			['impersonate','impersonate_include_groups_list', '[]', $includedGroups],
+			['impersonate', 'impersonate_all_groupadmins', false, $allowAllSubadminGroups]
 		];
 		$this->config
 			->method('getValue')
 			->will($this->returnValueMap($map));
 
-		$user = $this->createMock('\OCP\IUser');
+		if ($currentUser === null) {
+			$user = null;
+		} else {
+			$user = $this->createMock('\OCP\IUser');
+		}
 		$this->userSession
 			->method('getUser')
 			->willReturn($user);
 		if ($currentUser === null) {
+			$user = null;
 			$this->assertEquals(
 				new JSONResponse([
-					$includedGroups, $enabled, false, false
+					$includedGroups, $enabled, $allowAllSubadminGroups, false, false
 				]),
 				$this->controller->getDataForImpersonateApp('test')
 			);
@@ -524,7 +539,7 @@ class SettingsControllerTest extends TestCase {
 				->willReturn($isSubAdmin);
 			$this->assertEquals(
 				new JSONResponse([
-					$includedGroups, $enabled, $isAdmin, $isSubAdmin
+					$includedGroups, $enabled, $allowAllSubadminGroups, $isAdmin, $isSubAdmin
 				]),
 				$this->controller->getDataForImpersonateApp('test')
 			);
@@ -533,12 +548,44 @@ class SettingsControllerTest extends TestCase {
 
 	public function providesGetDataForImpersonateApp() {
 		return [
-			[true, ['hello', 'world'], null],
-			[true, ['hello', 'world'], 'user', true, true],
-			[true, ['hello', 'world'], 'user', true, false],
-			[true, ['hello', 'world'], 'user', false, true],
-			[false, ['hello', 'world'], 'user', false, true],
-			[false, [], 'user', false, true],
+			[true, ['hello', 'world'], "true", null],
+			[true, ['hello', 'world'], "false", 'user', true, true],
+			[true, ['hello', 'world'], "false",'user', true, false],
+			[true, ['hello', 'world'], "false", 'user', false, true],
+			[false, ['hello', 'world'], "false", 'user', false, true],
+			[false, [], "true", 'user', false, true],
 		];
+	}
+
+	public function testImpersonateGrantAllSubadmin() {
+		$user = $this->createMock(IUser::class);
+		$user->method('getUID')
+			->willReturn('foo');
+
+		$this->userSession
+			->method('getUser')
+			->willReturn($user);
+
+		$targetUser = $this->createMock(IUser::class);
+		$targetUser->method('getLastLogin')
+			->willReturn(1);
+
+		$this->userManager->method('get')
+			->willReturn($targetUser);
+
+		$this->groupManger->method('isAdmin')
+			->willReturn(false);
+
+		$this->config
+			->method('getValue')
+			->will($this->returnValueMap([
+				['impersonate', 'impersonate_include_groups_list', "", ""],
+				['impersonate', 'impersonate_all_groupadmins', "false", "true"]
+			]));
+
+		$this->assertEquals(
+			new JSONResponse(),
+			$this->controller->impersonate('foo')
+		);
 	}
 }

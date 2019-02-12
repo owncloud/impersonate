@@ -26,7 +26,7 @@
 	var includedGroups,
 	groupEnabled,
 	adminUser,
-	subadminUser;
+	subadminUser, subAdminFullAccess;
 
 	var currentUser = OC.getCurrentUser().uid;
 
@@ -41,8 +41,9 @@
 				promiseGetData.then(function (result) {
 					includedGroups = $.parseJSON(result[0]);
 					groupEnabled = JSON.parse($.trim(result[1]));
-					adminUser = JSON.parse($.trim(result[2]));
-					subadminUser = JSON.parse($.trim(result[3]));
+					subAdminFullAccess = JSON.parse($.trim(result[2]));
+					adminUser = JSON.parse($.trim(result[3]));
+					subadminUser = JSON.parse($.trim(result[4]));
 					if (!$tr) {
 						return;
 					}
@@ -59,21 +60,25 @@
 						addImpersonateIcon($tr);
 
 					} else if (subadminUser) {
-						var found = false;
-						if(groupEnabled) {
-							for (var i = 0; i < includedGroups.length; i++) {
-								if ($.inArray($.trim(includedGroups[i]), groupsSelectedByUser) !== -1) {
-									found = true;
-									addImpersonateIcon($tr);
-									break;
-								}
-							}
-						} else {
+						if (subAdminFullAccess) {
 							addImpersonateIcon($tr);
-							found = true;
-						}
-						if (found === false) {
-							removeImpersonateIcon($tr);
+						} else {
+							var found = false;
+							if (groupEnabled) {
+								for (var i = 0; i < includedGroups.length; i++) {
+									if ($.inArray($.trim(includedGroups[i]), groupsSelectedByUser) !== -1) {
+										found = true;
+										addImpersonateIcon($tr);
+										break;
+									}
+								}
+							} else {
+								addImpersonateIcon($tr);
+								found = true;
+							}
+							if (found === false) {
+								removeImpersonateIcon($tr);
+							}
 						}
 					}
 					return $tr;
