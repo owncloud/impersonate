@@ -6,7 +6,6 @@ OC.L10N.register(
     "Impersonate" : "他のユーザーとしてログイン",
     "Error" : "エラー",
     "Logged in as {currentUser}" : " {currentUser}としてログインしました",
-    "Impersonate Settings" : "他のユーザーとしてのログインの設定",
-    "Allow group admins to impersonate users from these groups" : "グループの管理者がこれらのグループのユーザーとしてログインすることを許可する"
+    "Impersonate Settings" : "他のユーザーとしてのログインの設定"
 },
 "nplurals=1; plural=0;");

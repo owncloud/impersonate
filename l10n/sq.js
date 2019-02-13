@@ -6,7 +6,6 @@ OC.L10N.register(
     "Impersonate" : "Imitoje",
     "Error" : "Gabim",
     "Logged in as {currentUser}" : "I futur si {currentUser}",
-    "Impersonate Settings" : "Rregullime Imitimesh",
-    "Allow group admins to impersonate users from these groups" : "Lejo përgjegjës grupi të imitojnë përdorues prej këtyre grupesh"
+    "Impersonate Settings" : "Rregullime Imitimesh"
 },
 "nplurals=2; plural=(n != 1);");
