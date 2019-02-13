@@ -61,7 +61,12 @@ js-templates: $(addsuffix .js, $(template_src))
 
 .PHONY: clean
 clean: ## Clean
-clean: clean-build
+clean: clean-build clean-deps
+
+.PHONY: clean-deps
+clean-deps:
+	rm -Rf vendor
+	rm -Rf vendor-bin/**/vendor vendor-bin/**/composer.lock
 
 .PHONY: clean-templates
 clean-templates:
