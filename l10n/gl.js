@@ -6,6 +6,8 @@ OC.L10N.register(
     "Impersonate" : "Suplantar",
     "Error" : "Erro",
     "Logged in as {currentUser}" : "Accedeu como {currentUser}",
-    "Impersonate Settings" : "Axustes da suplantación"
+    "Impersonate Settings" : "Axustes da suplantación",
+    "Allow all group admins to impersonate users within the groups they are admins of" : "Permitir que todos os administradores do grupo suplanten usuarios dentro dos grupos nos que son administradores",
+    "Allow group admins of specific groups to impersonate the users within those groups" : "Permitir que os administradores do grupo de grupos específicos suplanten aos usuarios dentro deses grupos"
 },
 "nplurals=2; plural=(n != 1);");
