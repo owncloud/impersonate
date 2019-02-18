@@ -45,18 +45,21 @@ help: ## Show this help message
 # Catch-all rules
 #
 .PHONY: dist
+dist: ## Build distribution and create tar file impersonate.tar.gz
 dist: build-dep js-templates build-src
 
 %.js: $(template_src)
 		$(HANDLEBARS) -n "$(js_namespace)" $* -f $@
 
 .PHONY: build-dep
+build-dep: ## fetch all dependencies
 build-dep: node_modules
 
 node_modules: package.json package-lock.json
 		$(NPM) install $(NODE_PREFIX) && touch $@
 
 PHONY: js-templates
+js-templates: ## build templates for frontend
 js-templates: $(addsuffix .js, $(template_src))
 
 .PHONY: clean

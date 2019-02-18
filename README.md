@@ -7,6 +7,8 @@ Once Impersonate is installed, a new column will be available in the user manage
 As a security measure, the application lets ownCloud administrators restrict the ability to impersonate users in specific groups. When enabled and configured, only a group’s administrator can impersonate members of their group. Administrators can find configuration options in the "User Authentication" section of the "Admin settings" panel.
 
 ## Installation
+For development, execute `make build-dep; make js-templates`
+To create distribution tar file, execute `make dist`
 
 # Known limitations
 - If you impersonate a user that has never logged in, the filesystem cannot be initialized (that requires a proper login). As a result you will only see an error page, no matter what app you try to use. You have to kill the cookie to log out. Maybe add a logout link to error pages?
