@@ -4,7 +4,11 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
-## [Unreleased]
+## [0.5.0]
+
+### Added
+
+- Add option for all group admins to impersonate their group members - [#134](https://github.com/owncloud/impersonate/issues/134)
 
 ## [0.4.0] - 2018-12-07
 
@@ -15,24 +19,29 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 ## [0.3.0] - 2018-11-08
 
 ### Added
+
 - PHP 7.2 support - [#115](https://github.com/owncloud/impersonate/pull/115)
 - Added Symfony event for impersonate action - [#109](https://github.com/owncloud/impersonate/pull/109)
 
 ### Changed
+
 - Set max version to 10.1 because core is switching to semver - [#105](https://github.com/owncloud/impersonate/pull/105)
 
 ### Fixes
+
 - Fix impersonate icon not displaying in some scenarios - [#114](https://github.com/owncloud/impersonate/pull/114)
 - Don't break when a non-existing group is mentionned in the config - [#119](https://github.com/owncloud/impersonate/pull/119)
 
 ## [0.2.0] - 2018-04-17
 
 ### Changed
+
 - Group admins can only impersonate members of the same group [#99](https://github.com/owncloud/impersonate/pull/99)
 
 ## [0.1.2] - 2017-12-07
 
 ### Changed
+
 - Moved impersonate Settings into User Authentication Section in Admin Panel [#54](https://github.com/owncloud/impersonate/pull/54)
 - View default app when impersonating a user [#88](https://github.com/owncloud/impersonate/pull/88)
 - Use precompiled handlebars for frontend templates [#42](https://github.com/owncloud/impersonate/pull/42)
@@ -94,7 +103,7 @@ owncloud-impersonate (0.0.2)
 owncloud-impersonate (0.0.1)
 * First release
 
-[Unreleased]: https://github.com/owncloud/impersonate/compare/v0.4.0...master
+[0.5.0]: https://github.com/owncloud/impersonate/compare/v0.4.0...v0.5.0
 [0.4.0]: https://github.com/owncloud/impersonate/compare/v0.3.0...v0.4.0
 [0.3.0]: https://github.com/owncloud/impersonate/compare/v0.2.0...v0.3.0
 [0.2.0]: https://github.com/owncloud/impersonate/compare/v0.1.2...v0.2.0
