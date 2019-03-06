@@ -56,7 +56,7 @@ build-dep: ## fetch all dependencies
 build-dep: node_modules
 
 node_modules: package.json package-lock.json
-		$(NPM) install $(NODE_PREFIX) && touch $@
+		$(NPM) install --prefix=$(NODE_PREFIX) && touch $@
 
 PHONY: js-templates
 js-templates: ## build templates for frontend
@@ -96,13 +96,13 @@ build-src: ## Build source package
 		CHANGELOG.md \
 		templates \
 		build/$(appname)
-	rm -f build/$(appname)/js/templates/*.handlebars
+	rm -Rf build/$(appname)/js/templates/*.handlebars build/$(appname)/l10n/.tx
 ifdef CAN_SIGN
 	$(sign) --path="$(CURDIR)/build/$(appname)"
 else
 	@echo $(sign_skip_msg)
 endif
-	tar -czf build/$(appname).tar.gz -C $(CURDIR)/build/$(appname) ../$(appname)
+	tar --format=gnu -czf build/$(appname).tar.gz -C $(CURDIR)/build/$(appname) ../$(appname)
 
 .PHONY: clean-build
 clean-build:
