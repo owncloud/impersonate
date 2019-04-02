@@ -30,13 +30,13 @@ use OCP\IUser;
 use Test\TestCase;
 
 class UtilTest extends TestCase {
-	/** @var  ISession | \PHPUnit_Framework_MockObject_MockObject */
+	/** @var  ISession | \PHPUnit\Framework\MockObject\MockObject */
 	private $session;
-	/** @var  DefaultTokenProvider | \PHPUnit_Framework_MockObject_MockObject */
+	/** @var  DefaultTokenProvider | \PHPUnit\Framework\MockObject\MockObject */
 	private $tokenProvider;
-	/** @var  Session | \PHPUnit_Framework_MockObject_MockObject */
+	/** @var  Session | \PHPUnit\Framework\MockObject\MockObject */
 	private $userSession;
-	/** @var  IRequest | \PHPUnit_Framework_MockObject_MockObject */
+	/** @var  IRequest | \PHPUnit\Framework\MockObject\MockObject */
 	private $request;
 	/** @var  Util */
 	private $util;
