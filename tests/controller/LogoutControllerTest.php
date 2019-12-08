@@ -51,7 +51,7 @@ class LogoutControllerTest extends TestCase {
 	private $tokenProvider;
 	private $util;
 
-	public function setUp() {
+	public function setUp(): void {
 		$this->appName = 'impersonate';
 		$this->request = $this->getMockBuilder(
 			'\OCP\IRequest')

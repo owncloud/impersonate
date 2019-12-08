@@ -40,7 +40,7 @@ class UtilTest extends TestCase {
 	private $request;
 	/** @var  Util */
 	private $util;
-	public function setUp() {
+	public function setUp(): void {
 		$this->session = $this->createMock(ISession::class);
 		$this->tokenProvider = $this->createMock(DefaultTokenProvider::class);
 		$this->userSession = $this->createMock(Session::class);
