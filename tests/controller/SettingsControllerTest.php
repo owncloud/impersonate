@@ -62,7 +62,7 @@ class SettingsControllerTest extends TestCase {
 	private $defaultTokenProvider;
 	private $util;
 
-	public function setUp() {
+	public function setUp(): void {
 		$this->appName = 'impersonate';
 		$this->request = $this->getMockBuilder(
 			'\OCP\IRequest')
