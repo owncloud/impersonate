@@ -45,7 +45,7 @@ class UtilTest extends TestCase {
 		$this->tokenProvider = $this->createMock(DefaultTokenProvider::class);
 		$this->userSession = $this->createMock(Session::class);
 		$this->request = $this->createMock(IRequest::class);
-		return parent::setUp();
+		parent::setUp();
 	}
 
 	public function impersonator() {
