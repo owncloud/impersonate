@@ -1,11 +1,11 @@
 { "translations": {
-    "Can not impersonate" : "Taklit edilemiyor",
+    "Can not impersonate" : "Kimliğe bürünülemiyor",
     "Unexpected error occured" : "Beklenmeyen hata oluştu",
-    "Impersonate" : "Taklit etme",
+    "Impersonate" : "Kimliğe Bürünme",
     "Error" : "Hata",
     "Logged in as {currentUser}" : "{currentUser} olarak giriş yapıldı.",
-    "Impersonate Settings" : "Taklit etme seçenekleri",
-    "Allow all group admins to impersonate users within the groups they are admins of" : "Tüm grup yöneticilerinin, yönetici oldukları gruplardaki kullanıcıları taklit etmelerine izin ver",
-    "Allow group admins of specific groups to impersonate the users within those groups" : "Belirli grupların grup yöneticilerinin bu gruplardaki kullanıcıları taklit etmelerine izin ver"
+    "Impersonate Settings" : "Kimliğe bürünme seçenekleri",
+    "Allow all group admins to impersonate users within the groups they are admins of" : "Tüm grup yöneticilerinin, yönetici oldukları gruplardaki kullanıcıların kimliklerine bürünmelerine izin ver",
+    "Allow group admins of specific groups to impersonate the users within those groups" : "Belirli grupların grup yöneticilerinin bu gruplardaki kullanıcıların kimliklerine bürünmelerine izin ver"
 },"pluralForm" :"nplurals=2; plural=(n > 1);"
 }
