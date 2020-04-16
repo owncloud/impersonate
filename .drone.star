@@ -20,6 +20,7 @@ config = {
 	},
 
 	'javascript': False,
+	'phpstan': True,
 
 	'phpunit': {
 		'allDatabases' : {

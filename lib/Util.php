@@ -59,7 +59,7 @@ class Util {
 	/**
 	 * Switch from admin/subAdmin $impersonator to $user
 	 * @param IUser $user
-	 * @param $impersonator
+	 * @param mixed $impersonator
 	 */
 	public function switchUser(IUser $user, $impersonator) {
 		$this->tokenProvider->invalidateToken($this->session->getId());
