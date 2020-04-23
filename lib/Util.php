@@ -26,7 +26,6 @@ use OC\User\Session;
 use OCP\IRequest;
 use OCP\ISession;
 use OCP\IUser;
-use OCP\IUserSession;
 
 class Util {
 	/** @var ISession  */

@@ -24,6 +24,7 @@ $eventDispatcher->addListener(
 		\OCP\Util::addScript('impersonate', 'templates/removeImpersonateIcon.handlebars');
 	}
 );
+/** @phan-suppress-next-line PhanUndeclaredClassMethod */
 $logoutController = new OCA\Impersonate\Controller\LogoutController(
 	'impersonate',
 	\OC::$server->getRequest(),
@@ -39,4 +40,5 @@ $logoutController = new OCA\Impersonate\Controller\LogoutController(
 		\OC::$server->query('\OC\Authentication\Token\DefaultTokenProvider')
 	)
 );
+/** @phan-suppress-next-line PhanUndeclaredClassInCallable */
 $eventDispatcher->addListener('\OC\User\Session::pre_logout', [$logoutController, 'logoutcontroller']);

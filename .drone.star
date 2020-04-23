@@ -9,17 +9,13 @@ config = {
 		'master'
 	],
 
-	'codestyle': {
-		'ordinary' : {
-			'phpVersions': [
-				'7.2',
-				'7.3',
-			],
-		},
-	},
+	'codestyle': True,
 
 	'javascript': False,
+
 	'phpstan': True,
+
+	'phan': True,
 
 	'phpunit': {
 		'allDatabases' : {
