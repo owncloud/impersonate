@@ -10,7 +10,7 @@
  "contributors": [],
  "dependencies": {},
  "devDependencies": {
-  "handlebars": "^4.0.5"
+  "handlebars": "^4.5.3"
  },
  "engine": "node >= 6.9",
  "scripts": {
