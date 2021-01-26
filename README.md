@@ -1,4 +1,7 @@
 # Impersonate
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=owncloud_impersonate&metric=alert_status)](https://sonarcloud.io/dashboard?id=owncloud_impersonate)
+[![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=owncloud_impersonate&metric=security_rating)](https://sonarcloud.io/dashboard?id=owncloud_impersonate)
+[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=owncloud_impersonate&metric=coverage)](https://sonarcloud.io/dashboard?id=owncloud_impersonate)
 
 The Impersonate application allows administrators, and group admins, to log in as another user within an ownCloud instance. It provides a helpdesk-like experience and can be useful to help users with configuration issues, to get a better understanding of what they see when they use their ownCloud account, or to perform actions in legacy accounts.
 
