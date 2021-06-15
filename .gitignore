@@ -5,6 +5,7 @@ js/templates/*.handlebars.js
 
 node_modules
 .php_cs.cache
+.php-cs-fixer.cache
 
 # Composer
 vendor/

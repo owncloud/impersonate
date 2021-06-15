@@ -45,10 +45,12 @@ class Util {
 	 * @param IRequest $request
 	 * @param DefaultTokenProvider $tokenProvider
 	 */
-	public function __construct(ISession $session,
-					Session $userSession,
-					IRequest $request,
-					DefaultTokenProvider $tokenProvider) {
+	public function __construct(
+		ISession $session,
+		Session $userSession,
+		IRequest $request,
+		DefaultTokenProvider $tokenProvider
+	) {
 		$this->session = $session;
 		$this->tokenProvider = $tokenProvider;
 		$this->userSession = $userSession;
