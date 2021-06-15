@@ -54,19 +54,23 @@ class LogoutControllerTest extends TestCase {
 	public function setUp(): void {
 		$this->appName = 'impersonate';
 		$this->request = $this->getMockBuilder(
-			'\OCP\IRequest')
+			'\OCP\IRequest'
+		)
 			->disableOriginalConstructor()
 			->getMock();
 		$this->userManager = $this->getMockBuilder(
-			'\OCP\IUserManager')
+			'\OCP\IUserManager'
+		)
 			->disableOriginalConstructor()
 			->getMock();
 		$this->userSession = $this->getMockBuilder(
-			'\OC\User\Session')
+			'\OC\User\Session'
+		)
 			->disableOriginalConstructor()
 			->getMock();
 		$this->logger = $this->getMockBuilder(
-			'\OCP\ILogger')
+			'\OCP\ILogger'
+		)
 			->disableOriginalConstructor()
 			->getMock();
 		$this->session = $this->getMockBuilder('OCP\ISession')
@@ -83,7 +87,8 @@ class LogoutControllerTest extends TestCase {
 			$this->logger,
 			$this->session,
 			$this->tokenProvider,
-			$this->util);
+			$this->util
+		);
 
 		parent::setUp();
 	}
@@ -130,11 +135,13 @@ class LogoutControllerTest extends TestCase {
 				->willReturn('foo');
 
 			$calledAfterLogout = [];
-			\OC::$server->getEventDispatcher()->addListener('user.afterimpersonatelogout',
+			\OC::$server->getEventDispatcher()->addListener(
+				'user.afterimpersonatelogout',
 				function (GenericEvent $event) use (&$calledAfterLogout) {
 					$calledAfterLogout[] = 'user.afterimpersonatelogout';
 					$calledAfterLogout[] = $event;
-				});
+				}
+			);
 			$this->assertEquals(
 				new JSONResponse(),
 				$this->controller->logoutcontroller($genericEvent)

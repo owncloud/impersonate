@@ -65,19 +65,23 @@ class SettingsControllerTest extends TestCase {
 	public function setUp(): void {
 		$this->appName = 'impersonate';
 		$this->request = $this->getMockBuilder(
-			'\OCP\IRequest')
+			'\OCP\IRequest'
+		)
 			->disableOriginalConstructor()
 			->getMock();
 		$this->userManager = $this->getMockBuilder(
-			'\OCP\IUserManager')
+			'\OCP\IUserManager'
+		)
 			->disableOriginalConstructor()
 			->getMock();
 		$this->userSession = $this->getMockBuilder(
-			'\OCP\IUserSession')
+			'\OCP\IUserSession'
+		)
 			->disableOriginalConstructor()
 			->getMock();
 		$this->logger = $this->getMockBuilder(
-			'\OCP\ILogger')
+			'\OCP\ILogger'
+		)
 			->disableOriginalConstructor()
 			->getMock();
 		$this->groupManger = $this->getMockBuilder(IGroupManager::class)
@@ -196,11 +200,13 @@ class SettingsControllerTest extends TestCase {
 				->willReturn(true);
 
 			$calledAfterImpersonate = [];
-			\OC::$server->getEventDispatcher()->addListener('user.afterimpersonate',
+			\OC::$server->getEventDispatcher()->addListener(
+				'user.afterimpersonate',
 				function (GenericEvent $event) use (&$calledAfterImpersonate) {
 					$calledAfterImpersonate[] = 'user.afterimpersonate';
 					$calledAfterImpersonate[] = $event;
-				});
+				}
+			);
 			$this->assertEquals(
 				new JSONResponse(),
 				$this->controller->impersonate($query)
@@ -323,7 +329,8 @@ class SettingsControllerTest extends TestCase {
 		$this->groupManger->expects($this->any())
 			->method('get')
 			->will(
-				$this->returnValueMap([
+				$this->returnValueMap(
+					[
 					['testgroup', null],
 					['testgroup2', $iGroup]
 					]
@@ -333,7 +340,8 @@ class SettingsControllerTest extends TestCase {
 		$this->groupManger->expects($this->any())
 			->method('isInGroup')
 			->will(
-				$this->returnValueMap([
+				$this->returnValueMap(
+					[
 						['username','testgroup', false],
 						['username','testgroup2', true]
 					]
@@ -345,11 +353,13 @@ class SettingsControllerTest extends TestCase {
 			->willReturn(true);
 
 		$calledAfterImpersonate = [];
-		\OC::$server->getEventDispatcher()->addListener('user.afterimpersonate',
+		\OC::$server->getEventDispatcher()->addListener(
+			'user.afterimpersonate',
 			function (GenericEvent $event) use (&$calledAfterImpersonate) {
 				$calledAfterImpersonate[] = 'user.afterimpersonate';
 				$calledAfterImpersonate[] = $event;
-			});
+			}
+		);
 		$this->assertEquals(
 			new JSONResponse(),
 			$this->controller->impersonate('Username')
@@ -495,7 +505,8 @@ class SettingsControllerTest extends TestCase {
 			new JSONResponse(['error' => "stopNestedImpersonation",
 			'message' => $this->l->t("Can not impersonate")
 		], http::STATUS_NOT_FOUND),
-		$this->controller->impersonate('bar'));
+			$this->controller->impersonate('bar')
+		);
 	}
 
 	/**
