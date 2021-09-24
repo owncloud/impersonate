@@ -15,9 +15,6 @@ js_namespace=OCA.$(app_namespace)
 NODE_PREFIX=$(shell pwd)
 
 NPM := $(shell command -v npm 2> /dev/null)
-ifndef NPM
-	$(error npm is not available on your system, please install npm)
-endif
 
 ifneq (,$(wildcard $(private_key)))
 ifneq (,$(wildcard $(certificate)))
