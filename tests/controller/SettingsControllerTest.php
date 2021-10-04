@@ -411,7 +411,7 @@ class SettingsControllerTest extends TestCase {
 			->method('getUser')
 			->willReturn($user);
 
-		$this->userManager->expects($this->at(0))
+		$this->userManager->expects($this->once())
 			->method('get')
 			->with($query)
 			->willReturn($user);
@@ -450,7 +450,7 @@ class SettingsControllerTest extends TestCase {
 			->method('getUser')
 			->willReturn($user);
 
-		$this->userManager->expects($this->at(0))
+		$this->userManager->expects($this->once())
 			->method('get')
 			->with($adminUser)
 			->willReturn($user);
@@ -459,15 +459,14 @@ class SettingsControllerTest extends TestCase {
 			->method('getLastLogin')
 			->willReturn(1);
 
-		$this->groupManger->expects($this->at(0))
+		$this->groupManger
+			->expects($this->exactly(2))
 			->method('isAdmin')
-			->with($adminUser)
-			->willReturn(true);
-
-		$this->groupManger->expects($this->at(1))
-			->method('isAdmin')
-			->with($subadminUser)
-			->willReturn(false);
+			->withConsecutive(
+				[$adminUser],
+				[$subadminUser],
+			)
+			->willReturnOnConsecutiveCalls(true, false);
 
 		$this->assertEquals(
 			new JSONResponse(['error' => "cannotImpersonateAdminUser",
