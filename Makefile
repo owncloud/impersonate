@@ -1,9 +1,6 @@
 SHELL := /bin/bash
 
 COMPOSER_BIN := $(shell command -v composer 2> /dev/null)
-ifndef COMPOSER_BIN
-    $(error composer is not available on your system, please install composer)
-endif
 
 HANDLEBARS=$(CURDIR)/node_modules/handlebars/bin/handlebars
 appname=$(notdir $(CURDIR))
@@ -18,9 +15,6 @@ js_namespace=OCA.$(app_namespace)
 NODE_PREFIX=$(shell pwd)
 
 NPM := $(shell command -v npm 2> /dev/null)
-ifndef NPM
-	$(error npm is not available on your system, please install npm)
-endif
 
 ifneq (,$(wildcard $(private_key)))
 ifneq (,$(wildcard $(certificate)))
@@ -128,12 +122,12 @@ test-php-unit-dbg:
 .PHONY: test-php-style
 test-php-style: ## Run php-cs-fixer and check owncloud code-style
 test-php-style: vendor-bin/owncloud-codestyle/vendor
-	$(PHP_CS_FIXER) fix -v --diff --diff-format udiff --allow-risky yes --dry-run
+	$(PHP_CS_FIXER) fix -v --diff --allow-risky yes --dry-run
 
 .PHONY: test-php-style-fix
 test-php-style-fix: ## Run php-cs-fixer and fix code style issues
 test-php-style-fix: vendor-bin/owncloud-codestyle/vendor
-	$(PHP_CS_FIXER) fix -v --diff --diff-format udiff --allow-risky yes
+	$(PHP_CS_FIXER) fix -v --diff --allow-risky yes
 
 .PHONY: test-php-phan
 test-php-phan: ## Run phan

@@ -71,10 +71,19 @@ class SettingsController extends Controller {
 	 * @param IL10N $l10n
 	 * @param DefaultTokenProvider $tokenProvider
 	 */
-	public function __construct($appName, IRequest $request, IUserManager $userManager,
-				IUserSession $userSession, ILogger $logger, IGroupManager $groupManager,
-				SubAdmin $subAdmin, ISession $session, IAppConfig $config, IL10N $l10n,
-				DefaultTokenProvider $tokenProvider) {
+	public function __construct(
+		$appName,
+		IRequest $request,
+		IUserManager $userManager,
+		IUserSession $userSession,
+		ILogger $logger,
+		IGroupManager $groupManager,
+		SubAdmin $subAdmin,
+		ISession $session,
+		IAppConfig $config,
+		IL10N $l10n,
+		DefaultTokenProvider $tokenProvider
+	) {
 		parent::__construct($appName, $request);
 		$this->userManager = $userManager;
 		$this->userSession = $userSession;
