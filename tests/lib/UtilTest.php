@@ -1,8 +1,9 @@
 <?php
 /**
  * @author Sujith Haridasan <sharidasan@owncloud.com>
+ * @author Jannik Stehle <jstehle@owncloud.com>
  *
- * @copyright Copyright (c) 2017, ownCloud GmbH
+ * @copyright Copyright (c) 2021, ownCloud GmbH
  * @license AGPL-3.0
  *
  * This code is free software: you can redistribute it and/or modify
@@ -30,48 +31,79 @@ use OCP\IUser;
 use Test\TestCase;
 
 class UtilTest extends TestCase {
-	/** @var  ISession | \PHPUnit\Framework\MockObject\MockObject */
+	/** @var ISession | \PHPUnit\Framework\MockObject\MockObject */
 	private $session;
-	/** @var  DefaultTokenProvider | \PHPUnit\Framework\MockObject\MockObject */
+	/** @var DefaultTokenProvider | \PHPUnit\Framework\MockObject\MockObject */
 	private $tokenProvider;
-	/** @var  Session | \PHPUnit\Framework\MockObject\MockObject */
+	/** @var Session | \PHPUnit\Framework\MockObject\MockObject */
 	private $userSession;
-	/** @var  IRequest | \PHPUnit\Framework\MockObject\MockObject */
+	/** @var IRequest | \PHPUnit\Framework\MockObject\MockObject */
 	private $request;
-	/** @var  Util */
+	/** @var Util */
 	private $util;
+	/** @var IUser | \PHPUnit\Framework\MockObject\MockObject */
+	private $user;
+
 	public function setUp(): void {
 		$this->session = $this->createMock(ISession::class);
 		$this->tokenProvider = $this->createMock(DefaultTokenProvider::class);
 		$this->userSession = $this->createMock(Session::class);
 		$this->request = $this->createMock(IRequest::class);
+		$this->util = new Util($this->session, $this->userSession, $this->request, $this->tokenProvider);
+		$this->user = $this->createMock(IUser::class);
 		parent::setUp();
 	}
 
-	public function impersonator() {
-		return [
-			[null],
-			['admin']
-			];
+	public function testSwitchUserWithImpersonator() {
+		$impersonator = 'admin';
+		$encryptionInitialized = 1;
+		$privateKey = 'privateKey';
+		$this->session
+			->expects($this->exactly(3))
+			->method('get')
+			->withConsecutive(
+				['impersonator'],
+				['encryptionInitialized'],
+				['privateKey'],
+			)
+			->willReturn(null, $encryptionInitialized, $privateKey);
+		$this->session
+			->expects($this->exactly(3))
+			->method('set')
+			->withConsecutive(
+				['impersonator', $impersonator],
+				['impersonatorEncryptionInitialized', $encryptionInitialized],
+				['impersonatorPrivateKey', $privateKey],
+			);
+		$this->util->switchUser($this->user, $impersonator);
 	}
 
-	/**
-	 * @dataProvider impersonator
-	 * @param $impersonator
-	 */
-	public function testSwitchUser($impersonator) {
-		$user = $this->createMock(IUser::class);
-		$this->util = new Util($this->session, $this->userSession, $this->request, $this->tokenProvider);
-		if ($impersonator !== null) {
-			$this->session
-				->method('get')
-				->willReturn($impersonator);
-		}
-		$this->util->switchUser($user, $impersonator);
-		if ($impersonator === null) {
-			$this->assertEquals($this->session->exists('impersonator'), false);
-		} else {
-			$this->assertEquals($this->session->get('impersonator'), $impersonator);
-		}
+	public function testSwitchUserWithoutImpersonator() {
+		$encryptionInitialized = 1;
+		$privateKey = 'privateKey';
+		$this->session
+			->expects($this->exactly(2))
+			->method('get')
+			->withConsecutive(
+				['impersonatorEncryptionInitialized'],
+				['impersonatorPrivateKey'],
+			)
+			->willReturn($encryptionInitialized, $privateKey);
+		$this->session
+			->expects($this->exactly(2))
+			->method('set')
+			->withConsecutive(
+				['encryptionInitialized', $encryptionInitialized],
+				['privateKey', $privateKey],
+			);
+		$this->session
+			->expects($this->exactly(3))
+			->method('remove')
+			->withConsecutive(
+				['impersonator'],
+				['impersonatorEncryptionInitialized'],
+				['impersonatorPrivateKey'],
+			);
+		$this->util->switchUser($this->user, null);
 	}
 }

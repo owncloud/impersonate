@@ -45,9 +45,16 @@ class LogoutController extends Controller {
 	 * @param EventDispatcher $eventDispatcher
 	 */
 
-	public function __construct($appName, IRequest $request,IUserManager $userManager,
-								IUserSession $userSession, ILogger $logger, ISession $session,
-								DefaultTokenProvider $tokenProvider, Util $util) {
+	public function __construct(
+		$appName,
+		IRequest $request,
+		IUserManager $userManager,
+		IUserSession $userSession,
+		ILogger $logger,
+		ISession $session,
+		DefaultTokenProvider $tokenProvider,
+		Util $util
+	) {
 		parent::__construct($appName, $request);
 		$this->userManager = $userManager;
 		$this->userSession = $userSession;
