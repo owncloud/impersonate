@@ -6,6 +6,8 @@ OC.L10N.register(
     "Impersonate" : "用户模拟",
     "Error" : "错误",
     "Logged in as {currentUser}" : "作为 {currentUser} 登录",
-    "Impersonate Settings" : "用户模拟设置"
+    "Impersonate Settings" : "用户模拟设置",
+    "Allow all group admins to impersonate users within the groups they are admins of" : "允许所有组管理员在他们是管理员的组中模拟用户",
+    "Allow group admins of specific groups to impersonate the users within those groups" : "允许特定组的组管理员模拟这些组中的用户"
 },
 "nplurals=1; plural=0;");
