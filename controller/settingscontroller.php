@@ -147,6 +147,15 @@ class SettingsController extends Controller {
 	 * @return JSONResponse
 	 */
 	public function impersonate($target) {
+		// check if app is enabled at all
+		$appEnabled = $this->config->getValue('impersonate', 'enabled', 'no');
+		if ($appEnabled === 'no') {
+			return new JSONResponse([
+				'error' => 'cannotImpersonate',
+				'message' => $this->l->t('Can not impersonate. Please contact your server administrator to allow impersonation.'),
+			], http::STATUS_NOT_FOUND);
+		}
+
 		$currentUser = $this->userSession->getUser();
 
 		//If there is no current user don't impersonate
@@ -193,6 +202,45 @@ class SettingsController extends Controller {
 				'message' => $this->l->t('Can not impersonate'),
 			], http::STATUS_NOT_FOUND);
 		} else {
+			// check if feature "enable app for certain groups" is used, and if yes, do validation
+			if ($appEnabled !== 'yes') {
+				// when config->getValue('impersonate', 'enabled') is not 'yes' or 'no'
+				// it should be an array with group ids
+				$appEnabledGroupIds = \json_decode($appEnabled);
+				if (!\is_array($appEnabledGroupIds)) {
+					// invalid app config
+					$this->session->remove('impersonator');
+					return new JSONResponse([
+						'error' => 'cannotImpersonate',
+						'message' => $this->l->t('Unexpected error occured.')
+					], http::STATUS_NOT_FOUND);
+				}
+				foreach ($appEnabledGroupIds as $appEnabledGroupId) {
+					if (!$this->groupManager->isInGroup($target, $appEnabledGroupId)) {
+						// trying to impersonate user that is not allowed to use the app
+						$this->logger->warning(
+							"User $impersonator attempt to impersonate $target where target user is not in group for which app is enabled"
+						);
+						$this->session->remove('impersonator');
+						return new JSONResponse([
+							'error' => 'cannotImpersonate',
+							'message' => $this->l->t('Can not impersonate. Please contact your server administrator to allow impersonation.')
+						], http::STATUS_NOT_FOUND);
+					}
+					if (!$this->groupManager->isInGroup($impersonator, $appEnabledGroupId)) {
+						// this should not happen in normal flow
+						$this->logger->error(
+							"User $impersonator attempt to impersonate $target where impersonator is not in group for which app is enabled"
+						);
+						$this->session->remove('impersonator');
+						return new JSONResponse([
+							'error' => 'cannotImpersonate',
+							'message' => $this->l->t('Unexpected error occured.')
+						], http::STATUS_NOT_FOUND);
+					}
+				}
+			}
+
 			if ($this->groupManager->isAdmin($currentUser->getUID())) {
 				return $this->impersonateUser($impersonator, $target, $user);
 			}
