@@ -95,6 +95,9 @@ class SettingsControllerTest extends TestCase {
 			->getMock();
 		$this->l = $this->getMockBuilder(IL10N::class)
 			->getMock();
+		$this->l->method('t')->will($this->returnCallback(function ($text) {
+			return $text;
+		}));
 		$this->defaultTokenProvider = $this->createMock(\OC\Authentication\Token\DefaultTokenProvider::class);
 		$this->util = $this->createMock(\OCA\Impersonate\Util::class);
 
@@ -181,6 +184,7 @@ class SettingsControllerTest extends TestCase {
 			$this->config
 				->method('getValue')
 				->will($this->returnValueMap([
+					['impersonate', 'enabled', "no", "yes"],
 					['impersonate', 'impersonate_include_groups_list', "", \json_encode([$group])],
 					['impersonate', 'impersonate_all_groupadmins', "false", "false"]
 				]));
@@ -221,6 +225,7 @@ class SettingsControllerTest extends TestCase {
 			$this->config
 				->method('getValue')
 				->will($this->returnValueMap([
+					['impersonate', 'enabled', "no", "yes"],
 					['impersonate', 'impersonate_include_groups_list', "", ""],
 					['impersonate', 'impersonate_all_groupadmins', "false", "false"]
 				]));
@@ -267,6 +272,7 @@ class SettingsControllerTest extends TestCase {
 		$this->config
 			->method('getValue')
 			->will($this->returnValueMap([
+				['impersonate', 'enabled', "no", "yes"],
 				['impersonate', 'impersonate_include_groups_list', "", \json_encode(['testgroup'])],
 				['impersonate', 'impersonate_all_groupadmins', "false", "false"]
 			]));
@@ -320,6 +326,7 @@ class SettingsControllerTest extends TestCase {
 		$this->config
 			->method('getValue')
 			->will($this->returnValueMap([
+				['impersonate', 'enabled', "no", "yes"],
 				['impersonate', 'impersonate_include_groups_list', "", \json_encode(['testgroup','testgroup2'])],
 				['impersonate', 'impersonate_all_groupadmins', "false", "false"]
 			]));
@@ -401,7 +408,6 @@ class SettingsControllerTest extends TestCase {
 	 * @param $query
 	 * @param $uid
 	 */
-
 	public function testImpersonateNeverLoggedInUser($query, $uid) {
 		$user = $this->createMock('\OCP\IUser');
 		$user->method('getUID')
@@ -589,6 +595,7 @@ class SettingsControllerTest extends TestCase {
 		$this->config
 			->method('getValue')
 			->will($this->returnValueMap([
+				['impersonate', 'enabled', "no", "yes"],
 				['impersonate', 'impersonate_include_groups_list', "", ""],
 				['impersonate', 'impersonate_all_groupadmins', "false", "true"]
 			]));
@@ -596,6 +603,163 @@ class SettingsControllerTest extends TestCase {
 		$this->assertEquals(
 			new JSONResponse(),
 			$this->controller->impersonate('foo')
+		);
+	}
+
+	public function testImpersonateAppDisabled() {
+		$this->config
+			->method('getValue')
+			->will($this->returnValueMap([
+				['impersonate', 'enabled', "no", "no"],
+			]));
+		
+		$this->userSession->expects($this->never())
+			->method('getUser');
+
+		$this->assertEquals(
+			new JSONResponse(['error' => "cannotImpersonate",
+				'message' => $this->l->t("Can not impersonate. Please contact your server administrator to allow impersonation.")
+			], http::STATUS_NOT_FOUND),
+			$this->controller->impersonate('foo')
+		);
+	}
+
+	public function testImpersonateAppEnableInvalidConfig() {
+		$query='NormalUser';
+		$uid='username';
+
+		$this->config
+			->method('getValue')
+			->will($this->returnValueMap([
+				['impersonate', 'enabled', "no", "invalid value"],
+			]));
+		
+		$user = $this->createMock('\OCP\IUser');
+
+		$user->method('getUID')
+			->willReturn($uid);
+
+		$user->expects($this->once())
+			->method('getLastLogin')
+			->willReturn(1);
+
+		$this->userSession
+			->method('getUser')
+			->willReturn($user);
+	
+		$this->userManager->expects($this->atLeastOnce())
+			->method('get')
+			->with($query)
+			->willReturn($user);
+	
+		$this->groupManger->expects($this->any())
+			->method('isAdmin')
+			->willReturn(false);
+
+		$this->session->expects($this->once())
+			->method('remove');
+
+		$this->assertEquals(
+			new JSONResponse(['error' => "cannotImpersonate",
+				'message' => $this->l->t("Unexpected error occured.")
+			], http::STATUS_NOT_FOUND),
+			$this->controller->impersonate($query)
+		);
+	}
+
+	public function testImpersonateAppEnabledForTargetUser() {
+		$query='NormalUser';
+		$uid='username';
+		$group='app_enabled_group';
+
+		$this->config
+			->method('getValue')
+			->will($this->returnValueMap([
+				['impersonate', 'enabled', "no", \json_encode([$group])],
+				['impersonate', 'impersonate_all_groupadmins', "false", "true"]
+			]));
+		
+		$user = $this->createMock('\OCP\IUser');
+
+		$user->method('getUID')
+			->willReturn($uid);
+
+		$user->expects($this->once())
+			->method('getLastLogin')
+			->willReturn(1);
+
+		$this->userSession
+			->method('getUser')
+			->willReturn($user);
+	
+		$this->userManager->expects($this->atLeastOnce())
+			->method('get')
+			->with($query)
+			->willReturn($user);
+	
+		$this->groupManger->expects($this->any())
+			->method('isAdmin')
+			->willReturn(false);
+
+		$this->groupManger->expects($this->any())
+			->method('isInGroup')
+			->will($this->returnValueMap([
+				[$query, $group, true],
+			]));
+
+		$this->session->expects($this->never())
+			->method('remove');
+
+		$this->assertEquals(
+			new JSONResponse(),
+			$this->controller->impersonate($query)
+		);
+	}
+
+	public function testImpersonateAppNotEnabledForTargetUser() {
+		$query='NormalUser';
+		$uid='username';
+
+		$this->config
+			->method('getValue')
+			->will($this->returnValueMap([
+				['impersonate', 'enabled', "no", \json_encode(["app_enabled_group"])],
+			]));
+		
+		$user = $this->createMock('\OCP\IUser');
+
+		$user->method('getUID')
+			->willReturn($uid);
+
+		$user->expects($this->once())
+			->method('getLastLogin')
+			->willReturn(1);
+
+		$this->userSession
+			->method('getUser')
+			->willReturn($user);
+	
+		$this->userManager->expects($this->atLeastOnce())
+			->method('get')
+			->with($query)
+			->willReturn($user);
+	
+		$this->groupManger->expects($this->any())
+			->method('isAdmin')
+			->willReturn(false);
+
+		$this->groupManger->expects($this->any())
+			->method('isInGroup')
+			->willReturn(false);
+
+		$this->session->expects($this->once())
+			->method('remove');
+
+		$this->assertEquals(
+			new JSONResponse(['error' => "cannotImpersonate",
+				'message' => $this->l->t("Can not impersonate. Please contact your server administrator to allow impersonation.")
+			], http::STATUS_NOT_FOUND),
+			$this->controller->impersonate($query)
 		);
 	}
 }
