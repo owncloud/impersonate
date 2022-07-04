@@ -171,6 +171,11 @@ class SettingsControllerTest extends TestCase {
 			->willReturn(1);
 
 		if ($group === 'admin') {
+			$this->config
+				->method('getValue')
+				->will($this->returnValueMap([
+					['impersonate', 'enabled', "no", "yes"]
+				]));
 			//This user belongs to admin user
 			$this->groupManger->expects($this->any())
 				->method('isAdmin')

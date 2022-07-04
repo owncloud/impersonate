@@ -202,11 +202,6 @@ class SettingsController extends Controller {
 				'message' => $this->l->t('Can not impersonate'),
 			], http::STATUS_NOT_FOUND);
 		} else {
-			// admin is unconditionally allowed to impersonate
-			if ($this->groupManager->isAdmin($currentUser->getUID())) {
-				return $this->impersonateUser($impersonator, $target, $user);
-			}
-
 			// check if feature "enable app for certain groups" is used, and if yes, do validation
 			if ($appEnabled !== "yes") {
 				// when config->getValue('impersonate', 'enabled') is not 'yes' or 'no'
@@ -238,6 +233,11 @@ class SettingsController extends Controller {
 				}
 			}
 
+			// admin is unconditionally allowed to impersonate
+			if ($this->groupManager->isAdmin($currentUser->getUID())) {
+				return $this->impersonateUser($impersonator, $target, $user);
+			}
+			
 			$includedGroups = $this->config->getValue('impersonate', 'impersonate_include_groups_list', '');
 			$allowSubAdminsImpersonate = $this->config->getValue('impersonate', 'impersonate_all_groupadmins', "false");
 			if ($allowSubAdminsImpersonate === "true") {
