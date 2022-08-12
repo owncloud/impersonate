@@ -1,8 +1,10 @@
 OC.L10N.register(
     "impersonate",
     {
+    "Can not impersonate. Please contact your server administrator to allow impersonation." : "S’imitohet dot. Që të lejohen imitime, ju lutemi, lidhuni me përgjegjësin e shërbyesit tuaj.",
     "Can not impersonate" : "S’imitohet dot",
     "Unexpected error occured" : "Ndodhi një gabim i papritur",
+    "Unexpected error occured." : "Ndodhi gabim i papritur.",
     "Impersonate" : "Imitoje",
     "Error" : "Gabim",
     "Logged in as {currentUser}" : "I futur si {currentUser}",
