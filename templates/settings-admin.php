@@ -9,6 +9,12 @@ style('impersonate', 'settings-admin');
 	<p class="<?php if (\OC::$server->getAppConfig()->getValue('impersonate', 'enabled', 'no') === 'no') {
 	p('hidden');
 }?>">
+		<input type="radio" name="groupadmins" id="impersonateNoGroupAdmins" class="radio"
+			<?php if (\OC::$server->getAppConfig()->getValue('impersonate', 'impersonate_all_groupadmins', 'false') === 'false' && \OC::$server->getAppConfig()->getValue('impersonate', 'impersonate_include_groups', 'false') === 'false') {
+	print_unescaped('checked="checked"');
+} ?> />
+		<label for="impersonateNoGroupAdmins"><?php p($l->t('Only an administrator is allowed to impersonate users'))?></label><br/>
+
 		<input type="radio" name="groupadmins" id="impersonateAllGroupAdmins" class="radio"
 			<?php if (\OC::$server->getAppConfig()->getValue('impersonate', 'impersonate_all_groupadmins', 'false') !== 'false') {
 	print_unescaped('checked="checked"');
