@@ -4,7 +4,12 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
-## [Unreleased] - xxxx-xx-xx
+## [0.5.2] - 2022-09-15
+
+### Added
+
+- [#202](https://github.com/owncloud/impersonate/pull/202) - Restrict impersonation to users allowed to use the app
+
 
 ## [0.5.1] - 2022-01-14
 
