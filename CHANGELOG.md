@@ -4,7 +4,13 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
-## [Unreleased]
+## [Unreleased] - xxxx-xx-xx
+
+## [0.5.1] - 2022-01-14
+
+### Fixed
+
+- Fix encryption issues after the impersonator logs out - [#189](https://github.com/owncloud/impersonate/issues/189)
 
 ## [0.5.0] - 2019-03-05
 
@@ -105,7 +111,8 @@ owncloud-impersonate (0.0.2)
 owncloud-impersonate (0.0.1)
 * First release
 
-[Unreleased]: https://github.com/owncloud/impersonate/compare/v0.5.0...master
+[Unreleased]: https://github.com/owncloud/impersonate/compare/v0.5.1...master
+[0.5.1]: https://github.com/owncloud/impersonate/compare/v0.5.0...v0.5.1
 [0.5.0]: https://github.com/owncloud/impersonate/compare/v0.4.0...v0.5.0
 [0.4.0]: https://github.com/owncloud/impersonate/compare/v0.3.0...v0.4.0
 [0.3.0]: https://github.com/owncloud/impersonate/compare/v0.2.0...v0.3.0

@@ -4,6 +4,8 @@
     "Impersonate" : "他のユーザーとしてログイン",
     "Error" : "エラー",
     "Logged in as {currentUser}" : " {currentUser}としてログインしました",
-    "Impersonate Settings" : "他のユーザーとしてのログインの設定"
+    "Impersonate Settings" : "他のユーザーとしてのログインの設定",
+    "Allow all group admins to impersonate users within the groups they are admins of" : "すべてのグループ管理者に、グループ内の他のユーザとしてログインすることを許可する",
+    "Allow group admins of specific groups to impersonate the users within those groups" : "特定のグループ管理者に、グループ内の他のユーザとしてログインすることを許可する"
 },"pluralForm" :"nplurals=1; plural=0;"
 }

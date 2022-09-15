@@ -147,6 +147,15 @@ class SettingsController extends Controller {
 	 * @return JSONResponse
 	 */
 	public function impersonate($target) {
+		// check if app is enabled at all
+		$appEnabled = $this->config->getValue('impersonate', 'enabled', "no");
+		if ($appEnabled === "no") {
+			return new JSONResponse([
+				'error' => 'cannotImpersonate',
+				'message' => $this->l->t('Can not impersonate. Please contact your server administrator to allow impersonation.'),
+			], http::STATUS_NOT_FOUND);
+		}
+
 		$currentUser = $this->userSession->getUser();
 
 		//If there is no current user don't impersonate
@@ -193,10 +202,42 @@ class SettingsController extends Controller {
 				'message' => $this->l->t('Can not impersonate'),
 			], http::STATUS_NOT_FOUND);
 		} else {
+			// check if feature "enable app for certain groups" is used, and if yes, do validation
+			if ($appEnabled !== "yes") {
+				// when config->getValue('impersonate', 'enabled') is not 'yes' or 'no'
+				// it should be an array with group ids
+				$appEnabledGroupIds = \json_decode($appEnabled);
+				if (!\is_array($appEnabledGroupIds)) {
+					// invalid app config
+					$this->logger->error("Impersonate app has invalid config");
+					$this->session->remove('impersonator');
+					return new JSONResponse([
+						'error' => 'cannotImpersonate',
+						'message' => $this->l->t('Unexpected error occured.')
+					], http::STATUS_NOT_FOUND);
+				}
+				foreach ($appEnabledGroupIds as $appEnabledGroupId) {
+					// validate here whether target user is allowed to use the app, otherwise app javascript and other related
+					// code will not be rechable for that user when impersonation happens
+					// NOTE: we do not need to check impersonator as this code path is already not reachable for that user
+					if (!$this->groupManager->isInGroup($target, $appEnabledGroupId)) {
+						$this->logger->warning(
+							"User $impersonator attempt to impersonate $target where target user is not in group for which app is enabled"
+						);
+						$this->session->remove('impersonator');
+						return new JSONResponse([
+							'error' => 'cannotImpersonate',
+							'message' => $this->l->t('Can not impersonate. Please contact your server administrator to allow impersonation.')
+						], http::STATUS_NOT_FOUND);
+					}
+				}
+			}
+
+			// admin is unconditionally allowed to impersonate
 			if ($this->groupManager->isAdmin($currentUser->getUID())) {
 				return $this->impersonateUser($impersonator, $target, $user);
 			}
-
+			
 			$includedGroups = $this->config->getValue('impersonate', 'impersonate_include_groups_list', '');
 			$allowSubAdminsImpersonate = $this->config->getValue('impersonate', 'impersonate_all_groupadmins', "false");
 			if ($allowSubAdminsImpersonate === "true") {

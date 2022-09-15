@@ -1,8 +1,10 @@
 OC.L10N.register(
     "impersonate",
     {
+    "Can not impersonate. Please contact your server administrator to allow impersonation." : "Kimliğe bürünülemez. Kimliğe bürünmeye izin vermek için lütfen sunucu yöneticinizle iletişime geçin.",
     "Can not impersonate" : "Kimliğe bürünülemiyor",
     "Unexpected error occured" : "Beklenmeyen hata oluştu",
+    "Unexpected error occured." : "Beklenmeyen hata oluştu.",
     "Impersonate" : "Kimliğe Bürünme",
     "Error" : "Hata",
     "Logged in as {currentUser}" : "{currentUser} olarak giriş yapıldı.",

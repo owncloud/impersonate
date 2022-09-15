@@ -7,4 +7,3 @@ file_filter = <lang>/impersonate.po
 source_file = templates/impersonate.pot
 source_lang = en
 type = PO
-
