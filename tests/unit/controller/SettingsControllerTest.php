@@ -133,7 +133,7 @@ class SettingsControllerTest extends TestCase {
 		$this->assertEquals(
 			new JSONResponse([
 				'error' => 'userNotFound',
-				'message' => $this->l->t("Unexpected error occured")
+				'message' => $this->l->t("Unexpected error occurred")
 			], Http::STATUS_NOT_FOUND),
 			$this->controller->impersonate('notexisting@uid')
 		);
@@ -666,7 +666,7 @@ class SettingsControllerTest extends TestCase {
 
 		$this->assertEquals(
 			new JSONResponse(['error' => "cannotImpersonate",
-				'message' => $this->l->t("Unexpected error occured.")
+				'message' => $this->l->t("Unexpected error occurred.")
 			], http::STATUS_NOT_FOUND),
 			$this->controller->impersonate($query)
 		);

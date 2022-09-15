@@ -26,7 +26,7 @@ style('impersonate', 'settings-admin');
 	p('hidden');
 } ?>">
 		<input name="impersonate_include_groups_list" type="hidden" id="includedGroups" value="<?php
-		$includeGroupList = \OC::$server->getAppConfig()->getValue('impersonate', 'impersonate_include_groups_list', []);
+		$includeGroupList = \OC::$server->getAppConfig()->getValue('impersonate', 'impersonate_include_groups_list', "[]");
 		$includeGroupList = \json_decode($includeGroupList);
 		$listToPrint = \count($includeGroupList) > 0 ? \implode('|', $includeGroupList) : '';
 		p($listToPrint);
