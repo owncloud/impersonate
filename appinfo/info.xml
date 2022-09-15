@@ -15,7 +15,7 @@ As a security measure, the application lets ownCloud administrators restrict the
 	<version>0.5.2</version>
 	<namespace>Impersonate</namespace>
 	<documentation>
-	<admin>https://doc.owncloud.org/server/latest/admin_manual/issues/impersonate_users.html</admin>
+	<admin>https://doc.owncloud.com/server/latest/admin_manual/configuration/general_topics/impersonate_users.html</admin>
 	</documentation>
 	<bugs>https://github.com/owncloud/impersonate/issues</bugs>
 	<repository type="git">http://github.com/owncloud/impersonate.git</repository>
