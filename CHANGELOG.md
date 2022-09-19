@@ -4,12 +4,19 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
-## [0.5.2] - 2022-09-15
+## [0.5.2] - 2022-09-19
 
 ### Added
 
 - [#202](https://github.com/owncloud/impersonate/pull/202) - Restrict impersonation to users allowed to use the app
 
+### Fixed 
+
+- [#207](https://github.com/owncloud/impersonate/pull/207) - Fix impersonate include groups list
+- [#208](https://github.com/owncloud/impersonate/pull/208) - Allow impersonation if the target is in at least one of the allowed groups
+- [#209](https://github.com/owncloud/impersonate/pull/209) - Adjust doc link
+- [#210](https://github.com/owncloud/impersonate/pull/210) - If Impersonate gets configured, you cant get back to state "unconfigured" (default)
+- Library updates
 
 ## [0.5.1] - 2022-01-14
 
@@ -116,7 +123,8 @@ owncloud-impersonate (0.0.2)
 owncloud-impersonate (0.0.1)
 * First release
 
-[Unreleased]: https://github.com/owncloud/impersonate/compare/v0.5.1...master
+[Unreleased]: https://github.com/owncloud/impersonate/compare/v0.5.2...master
+[0.5.2]: https://github.com/owncloud/impersonate/compare/v0.5.1...v0.5.2
 [0.5.1]: https://github.com/owncloud/impersonate/compare/v0.5.0...v0.5.1
 [0.5.0]: https://github.com/owncloud/impersonate/compare/v0.4.0...v0.5.0
 [0.4.0]: https://github.com/owncloud/impersonate/compare/v0.3.0...v0.4.0
