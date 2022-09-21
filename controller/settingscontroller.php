@@ -126,9 +126,9 @@ class SettingsController extends Controller {
 	 * This method is called after the users capability to impersonate is decided
 	 * in the method impersonate($target).
 	 *
-	 * @param string $impersonator, the current user
-	 * @param string $target, the target user
-	 * @param IUser $user, target user object
+	 * @param string $impersonator the current user
+	 * @param string $target the target user
+	 * @param IUser $user target user object
 	 * @return JSONResponse
 	 */
 	private function impersonateUser($impersonator, $target, $user) {
@@ -183,11 +183,11 @@ class SettingsController extends Controller {
 			$this->session->remove('impersonator');
 			return new JSONResponse([
 				'error' => 'userNotFound',
-				'message' => $this->l->t('Unexpected error occured'),
+				'message' => $this->l->t('Unexpected error occurred'),
 			], Http::STATUS_NOT_FOUND);
 		} elseif ($user->getLastLogin() === 0) {
 			// It's a first time login
-			$this->logger->info("User $target did not logged in yet. User $impersonator cannot impersonate $target");
+			$this->logger->info("User $target has not logged in yet. User $impersonator cannot impersonate $target");
 			$this->session->remove('impersonator');
 			return new JSONResponse([
 				'error' => 'userNeverLoggedIn',
@@ -213,23 +213,27 @@ class SettingsController extends Controller {
 					$this->session->remove('impersonator');
 					return new JSONResponse([
 						'error' => 'cannotImpersonate',
-						'message' => $this->l->t('Unexpected error occured.')
+						'message' => $this->l->t('Unexpected error occurred.')
 					], http::STATUS_NOT_FOUND);
 				}
+				$targetIsInAtLeastOneOfTheAppEnabledGroupIds = false;
 				foreach ($appEnabledGroupIds as $appEnabledGroupId) {
 					// validate here whether target user is allowed to use the app, otherwise app javascript and other related
-					// code will not be rechable for that user when impersonation happens
+					// code will not be reachable for that user when impersonation happens
 					// NOTE: we do not need to check impersonator as this code path is already not reachable for that user
-					if (!$this->groupManager->isInGroup($target, $appEnabledGroupId)) {
-						$this->logger->warning(
-							"User $impersonator attempt to impersonate $target where target user is not in group for which app is enabled"
-						);
-						$this->session->remove('impersonator');
-						return new JSONResponse([
-							'error' => 'cannotImpersonate',
-							'message' => $this->l->t('Can not impersonate. Please contact your server administrator to allow impersonation.')
-						], http::STATUS_NOT_FOUND);
+					if ($this->groupManager->isInGroup($target, $appEnabledGroupId)) {
+						$targetIsInAtLeastOneOfTheAppEnabledGroupIds = true;
 					}
+				}
+				if (!$targetIsInAtLeastOneOfTheAppEnabledGroupIds) {
+					$this->logger->warning(
+						"User $impersonator attempt to impersonate $target where target user is not in group for which app is enabled"
+					);
+					$this->session->remove('impersonator');
+					return new JSONResponse([
+						'error' => 'cannotImpersonate',
+						'message' => $this->l->t('Can not impersonate. Please contact your server administrator to allow impersonation.')
+					], http::STATUS_NOT_FOUND);
 				}
 			}
 

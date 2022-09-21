@@ -78,7 +78,7 @@ class Util {
 			}
 
 			// Save the impersonator's encryption key in another session variable to reset it again later.
-			// This is neccessary because the "privateKey" var gets removed on logout.
+			// This is necessary because the "privateKey" var gets removed on logout.
 			$encryptionInitialized = $this->session->get('encryptionInitialized');
 			if ($encryptionInitialized !== null) {
 				$this->session->set('impersonatorEncryptionInitialized', $encryptionInitialized);
