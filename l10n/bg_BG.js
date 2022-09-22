@@ -2,7 +2,6 @@ OC.L10N.register(
     "impersonate",
     {
     "Can not impersonate" : "Не може да се представи",
-    "Unexpected error occured" : "Възникна неочаквана грешка",
     "Impersonate" : "Представяне",
     "Error" : "Грешка",
     "Logged in as {currentUser}" : "Влезли сте като {currentUser}",
