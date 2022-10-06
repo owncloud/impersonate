@@ -2,6 +2,7 @@
     "Can not impersonate. Please contact your server administrator to allow impersonation." : "Не може да се представяте. Моля, свържете се с администратора на сървъра за да ви разреши представянето.",
     "Can not impersonate" : "Не може да се представяте",
     "Unexpected error occurred" : "Възникна неочаквана грешка",
+    "Unexpected error occurred." : "Възникна неочаквана грешка.",
     "Impersonate" : "Представяне",
     "Error" : "Грешка",
     "Logged in as {currentUser}" : "Влезли сте като {currentUser}",
