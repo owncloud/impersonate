@@ -8,7 +8,7 @@
     "Logged in as {currentUser}" : "Влезли сте като {currentUser}",
     "Impersonate Settings" : "Настройки на представяне",
     "Only an administrator is allowed to impersonate users" : "Само на администратор е разрешено да се представя за потребител",
-    "Allow all group admins to impersonate users within the groups they are admins of" : "Разрешаване на всички администратори на групи да се представят и за потребители в рамките на групите, на които са администратори",
-    "Allow group admins of specific groups to impersonate the users within those groups" : "Разрешаване на администратори на конкретни групи да се представят и за потребителите в тези групи"
+    "Allow all group admins to impersonate users within the groups they are admins of" : "Разрешаване на всички администратори на групи да се представят, както и за потребители в рамките на групите, на които са администратори",
+    "Allow group admins of specific groups to impersonate the users within those groups" : "Разрешаване на администратори на конкретни групи да се представят, както и за потребителите в тези групи"
 },"pluralForm" :"nplurals=2; plural=(n != 1);"
 }
