@@ -48,7 +48,16 @@ config = {
     "phpstan": True,
     "phan": True,
     "phpunit": True,
-    "acceptance": False,
+    "acceptance": {
+        "api": {
+            "suites": [
+                "apiImpersonate",
+            ],
+            "servers": [
+                "daily-master-qa",
+            ],
+        },
+    },
 }
 
 def main(ctx):
