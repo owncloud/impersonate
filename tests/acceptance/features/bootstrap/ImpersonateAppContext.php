@@ -126,7 +126,7 @@ class ImpersonateAppContext implements Context {
 	}
 
 	/**
-	 * @Given /^the administrator has created following users:$/
+	 * @Given /^the administrator has created following users with settings:$/
 	 * expects a table of users data
 	 * | username | password | groupname | role |
 	 * this is using provisioning api
@@ -134,6 +134,7 @@ class ImpersonateAppContext implements Context {
 	 * @param TableNode $table
 	 *
 	 * @return void
+	 * @throws Exception
 	 */
 	public function createUserWithGroupAndRole(TableNode $table): void {
 		$this->featureContext->verifyTableNodeColumns($table, ['username', 'password', 'group'], ['role']);
@@ -156,9 +157,10 @@ class ImpersonateAppContext implements Context {
 
 	/**
 	 * @Given /"([^"]*)" option in impersonate settings has been set to "([^"]*)"$/
-   *
+	 *
 	 * @param string $option
-	 * @param string $value
+	 * @param string|null $value
+	 * @throws Exception
 	 */
 	public function setImpersonateSettings(string $option, ?string $value = ""): void {
 		$occCommandsArray = $this->getOccCommandsForImpersonateOption($option, $value);
@@ -176,6 +178,7 @@ class ImpersonateAppContext implements Context {
 	 * @param string $requester
 	 * @param string $impersonateUser
 	 * @return void
+	 * @throws JsonException|\GuzzleHttp\Exception\GuzzleException
 	 */
 	public function sendRequestToImpersonateUser(string $requester, string $impersonateUser): void {
 		$requestData = [
@@ -206,8 +209,9 @@ class ImpersonateAppContext implements Context {
 	/**
 	 * @Then /^the status code of impersonate action should be "([^"]*)"$/
 	 *
-	 * @param string $successStatus
+	 * @param int $statusCode
 	 * @return void
+	 * @throws Exception
 	 */
 	public function checkStatusCodeOfImpersonateApp(int $statusCode): void {
 		if ($this->impersonateResponseCode !== $statusCode) {

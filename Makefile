@@ -4,8 +4,9 @@ COMPOSER_BIN := $(shell command -v composer 2> /dev/null)
 
 HANDLEBARS=$(CURDIR)/node_modules/handlebars/bin/handlebars
 appname=$(notdir $(CURDIR))
-tests_acceptance_directory=$(CURDIR)/../../tests/acceptance
 
+
+# composer
 acceptance_test_deps=vendor-bin/behat/vendor
 
 occ=$(CURDIR)/../../occ
@@ -36,6 +37,8 @@ PHAN=php -d zend.enable_gc=0 vendor-bin/phan/vendor/bin/phan
 PHPSTAN=php -d zend.enable_gc=0 vendor-bin/phpstan/vendor/bin/phpstan
 BEHAT_BIN=vendor-bin/behat/vendor/bin/behat
 
+all: build
+
 # start with displaying help
 help: ## Show this help message
 	@fgrep -h "##" $(MAKEFILE_LIST) | fgrep -v fgrep | sed -e 's/\\$$//' | sed -e 's/##//' | sed -e 's/  */ /' | column -t -s :
@@ -61,6 +64,21 @@ PHONY: js-templates
 js-templates: ## build templates for frontend
 js-templates: $(addsuffix .js, $(template_src))
 
+# Installs and updates the composer dependencies.
+.PHONY: composer
+composer:
+	composer install --prefer-dist
+	composer update --prefer-dist
+
+# Fetches the PHP and JS dependencies and compiles the JS. If no composer.json
+# is present, the composer step is skipped, if no package.json or js/package.json
+# is present, the npm step is skipped
+.PHONY: build
+build:
+ifneq (,$(wildcard $(CURDIR)/composer.json))
+	make composer
+endif
+
 .PHONY: clean
 clean: ## Clean
 clean: clean-build clean-deps
@@ -73,7 +91,6 @@ clean-deps:
 .PHONY: clean-templates
 clean-templates:
 		rm -f $(addsuffix .js, $(template_src))
-
 
 .PHONY: build-src
 
@@ -152,12 +169,13 @@ test-acceptance-api: $(acceptance_test_deps)
 .PHONY: test-acceptance-cli
 test-acceptance-cli: ## Run CLI acceptance tests
 test-acceptance-cli:
-	../../tests/acceptance/run.sh --remote --type cli
+	BEHAT_BIN=$(BEHAT_BIN) ../../tests/acceptance/run.sh --remote --type cli
 
 .PHONY: test-acceptance-webui
-test-acceptance-webui: ## Run webUI acceptance tests
-test-acceptance-webui:
-	../../tests/acceptance/run.sh --remote --type webUI
+test-acceptance-webui:  ## Run webUI acceptance tests
+test-acceptance-webui: $(acceptance_test_deps)
+	BEHAT_BIN=$(BEHAT_BIN) ../../tests/acceptance/run.sh --remote --type webUI
+
 
 #
 # Dependency management
@@ -191,7 +209,7 @@ vendor-bin/phpstan/composer.lock: vendor-bin/phpstan/composer.json
 	@echo phpstan composer.lock is not up to date.
 
 vendor-bin/behat/vendor: vendor/bamarni/composer-bin-plugin vendor-bin/behat/composer.lock
-	composer bin behat install --no-progress
+	$(COMPOSER_BIN) bin behat install --no-progress
 
 vendor-bin/behat/composer.lock: vendor-bin/behat/composer.json
 	@echo behat composer.lock is not up to date.

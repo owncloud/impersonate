@@ -17,5 +17,16 @@ default:
         - OccContext:
         - OccUsersGroupsContext:
 
+    webUIImpersonate:
+      paths:
+        - '%paths.base%/../features/webUIImpersonate'
+      contexts:
+        - ImpersonateAppContext:
+        - FeatureContext: *common_feature_context_params
+        - WebUIGeneralContext:
+        - WebUIUsersContext:
+        - WebUILoginContext:
+        - WebUIImpersonateContext:
+
   extensions:
     Cjm\Behat\StepThroughExtension: ~
