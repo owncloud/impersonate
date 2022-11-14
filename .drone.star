@@ -51,6 +51,27 @@ config = {
     "phan": True,
     "phpunit": True,
     "acceptance": {
+        "webUI": {
+            "suites": [
+                "webUIImpersonate",
+            ],
+            "browsers": [
+                "chrome",
+                "firefox",
+            ],
+            "servers": [
+                "daily-master-qa",
+            ],
+            "extraSetup": [{
+                "name": "build-app",
+                "image": OC_CI_NODEJS % DEFAULT_NODEJS_VERSION,
+                "commands": [
+                    "cd /var/www/owncloud/server/apps/impersonate",
+                    "make build-dep",
+                    "make js-templates",
+                ],
+            }],
+        },
         "api": {
             "suites": [
                 "apiImpersonate",

@@ -1,12 +1,12 @@
 @api
 Feature: Impersonate
 
-  As a owner,
-  I want to impersonate a user,
-  So that I can see what they see.
+  As an admin
+  I want to impersonate a user
+  So that I can see what they see
 
   Background:
-    Given the administrator has created following users:
+    Given the administrator has created following users with settings:
       | username | password | group  | role        |
       | Alice    | Alice    | group1 | user        |
       | Bob      | Bob      | group1 | group-admin |
