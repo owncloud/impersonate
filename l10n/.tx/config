@@ -2,7 +2,7 @@
 host = https://www.transifex.com
 lang_map = ja_JP: ja
 
-[owncloud.impersonate]
+[o:owncloud-org:p:owncloud:r:impersonate]
 file_filter = <lang>/impersonate.po
 source_file = templates/impersonate.pot
 source_lang = en
