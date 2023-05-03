@@ -117,10 +117,7 @@ class ImpersonateAppContext implements Context {
 
 		$this->featureContext->addUserToCreatedUsersList(
 			$user,
-			$password,
-			null,
-			null,
-			null,
+			$password
 		);
 		$this->featureContext->addGroupToCreatedGroupsList($group);
 	}
