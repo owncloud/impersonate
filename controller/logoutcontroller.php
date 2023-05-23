@@ -14,6 +14,7 @@ use OCP\ISession;
 use OCP\IUserManager;
 use OCP\IUserSession;
 use Symfony\Component\EventDispatcher\EventDispatcher;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\EventDispatcher\GenericEvent;
 
 class LogoutController extends Controller {
@@ -25,10 +26,9 @@ class LogoutController extends Controller {
 	private $logger;
 	/** @var ISession  */
 	private $session;
-	/** @var EventDispatcher  */
+	/** @var EventDispatcher|EventDispatcherInterface  */
 	private $eventDispatcher;
 	private $tokenProvider;
-	private $ocUserSession;
 	private $util;
 
 	/**
@@ -42,7 +42,8 @@ class LogoutController extends Controller {
 	 * @param IUserSession $userSession
 	 * @param ILogger $logger
 	 * @param ISession $session
-	 * @param EventDispatcher $eventDispatcher
+	 * @param DefaultTokenProvider $tokenProvider
+	 * @param Util $util
 	 */
 
 	public function __construct(
@@ -100,7 +101,7 @@ class LogoutController extends Controller {
 			$stopEvent = new GenericEvent(null, ['impersonator' => $impersonator, 'targetUser' => $currentUser]);
 			$this->logger->info("Switching back to previous user $impersonator", ['app' => 'impersonate']);
 			$event->setArgument('cancel', true);
-			$this->eventDispatcher->dispatch('user.afterimpersonatelogout', $stopEvent);
+			$this->eventDispatcher->dispatch($stopEvent, 'user.afterimpersonatelogout');
 		}
 
 		return new JSONResponse();

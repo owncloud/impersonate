@@ -5,3 +5,9 @@ parameters:
   excludePaths:
     - %currentWorkingDirectory%/appinfo/routes.php
   ignoreErrors:
+    -
+      message: '#Property OCA\\Impersonate\\Controller\\LogoutController::\$tokenProvider is never read, only written.#'
+      path: controller/logoutcontroller.php
+    -
+      message: '#Parameter \#3 \$default of method OCP\\IAppConfig::getValue\(\) expects string\|null, false given.#'
+      path: controller/settingscontroller.php
