@@ -27,6 +27,7 @@ use OCP\IUser;
 use OCP\IUserManager;
 use OCP\IUserSession;
 use Symfony\Component\EventDispatcher\EventDispatcher;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\EventDispatcher\GenericEvent;
 
 class SettingsController extends Controller {
@@ -53,7 +54,7 @@ class SettingsController extends Controller {
 	private $ocUserSession;
 	/** @var \OCA\Impersonate\Util  */
 	private $util;
-	/** @var EventDispatcher  */
+	/** @var EventDispatcher|EventDispatcherInterface  */
 	private $eventDispatcher;
 
 	/**
@@ -95,7 +96,7 @@ class SettingsController extends Controller {
 		$this->l = $l10n;
 		$this->tokenProvider = $tokenProvider;
 		$this->ocUserSession = \OC::$server->getUserSession();
-		$this->util = new Util($this->session, $this->ocUserSession, $this->request, $tokenProvider);
+		$this->util = new Util($this->session, $this->ocUserSession, $this->request, $this->tokenProvider);
 		$this->eventDispatcher = \OC::$server->getEventDispatcher();
 	}
 
@@ -135,7 +136,7 @@ class SettingsController extends Controller {
 		$this->logger->info("User $impersonator impersonated user $target", ['app' => 'impersonate']);
 		$this->util->switchUser($user, $impersonator);
 		$startEvent = new GenericEvent(null, ['impersonator' => $impersonator, 'targetUser' => $target]);
-		$this->eventDispatcher->dispatch('user.afterimpersonate', $startEvent);
+		$this->eventDispatcher->dispatch($startEvent, 'user.afterimpersonate');
 		return new JSONResponse();
 	}
 
