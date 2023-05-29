@@ -8,6 +8,8 @@ parameters:
     -
       message: '#Property OCA\\Impersonate\\Controller\\LogoutController::\$tokenProvider is never read, only written.#'
       path: controller/logoutcontroller.php
+      count: 1
     -
       message: '#Parameter \#3 \$default of method OCP\\IAppConfig::getValue\(\) expects string\|null, false given.#'
       path: controller/settingscontroller.php
+      count: 2

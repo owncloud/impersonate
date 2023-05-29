@@ -32,7 +32,6 @@ use Test\TestCase;
  */
 
 class LogoutControllerTest extends TestCase {
-
 	/** @var string */
 	private $appName;
 	/** @var IRequest */
