@@ -31,7 +31,6 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\EventDispatcher\GenericEvent;
 
 class SettingsController extends Controller {
-
 	/** @var IUserManager */
 	private $userManager;
 	/** @var IUserSession */
