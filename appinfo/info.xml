@@ -12,7 +12,7 @@ As a security measure, the application lets ownCloud administrators restrict the
 </description>
 	<licence>AGPL</licence>
 	<author>Jörn Friedrich Dreyer, Sujith Haridasan</author>
-	<version>0.5.2</version>
+	<version>0.5.3</version>
         <types>
 	       <authentication/>
         </types>
