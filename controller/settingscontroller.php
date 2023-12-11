@@ -235,6 +235,7 @@ class SettingsController extends Controller {
 						'message' => $this->l->t('Can not impersonate. Please contact your server administrator to allow impersonation.')
 					], http::STATUS_NOT_FOUND);
 				}
+                                return $this->impersonateUser($impersonator, $target, $user);
 			}
 
 			// admin is unconditionally allowed to impersonate
