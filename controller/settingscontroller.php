@@ -202,41 +202,6 @@ class SettingsController extends Controller {
 				'message' => $this->l->t('Can not impersonate'),
 			], http::STATUS_NOT_FOUND);
 		} else {
-			// check if feature "enable app for certain groups" is used, and if yes, do validation
-			if ($appEnabled !== "yes") {
-				// when config->getValue('impersonate', 'enabled') is not 'yes' or 'no'
-				// it should be an array with group ids
-				$appEnabledGroupIds = \json_decode($appEnabled);
-				if (!\is_array($appEnabledGroupIds)) {
-					// invalid app config
-					$this->logger->error("Impersonate app has invalid config");
-					$this->session->remove('impersonator');
-					return new JSONResponse([
-						'error' => 'cannotImpersonate',
-						'message' => $this->l->t('Unexpected error occurred.')
-					], http::STATUS_NOT_FOUND);
-				}
-				$targetIsInAtLeastOneOfTheAppEnabledGroupIds = false;
-				foreach ($appEnabledGroupIds as $appEnabledGroupId) {
-					// validate here whether target user is allowed to use the app, otherwise app javascript and other related
-					// code will not be reachable for that user when impersonation happens
-					// NOTE: we do not need to check impersonator as this code path is already not reachable for that user
-					if ($this->groupManager->isInGroup($target, $appEnabledGroupId)) {
-						$targetIsInAtLeastOneOfTheAppEnabledGroupIds = true;
-					}
-				}
-				if (!$targetIsInAtLeastOneOfTheAppEnabledGroupIds) {
-					$this->logger->warning(
-						"User $impersonator attempt to impersonate $target where target user is not in group for which app is enabled"
-					);
-					$this->session->remove('impersonator');
-					return new JSONResponse([
-						'error' => 'cannotImpersonate',
-						'message' => $this->l->t('Can not impersonate. Please contact your server administrator to allow impersonation.')
-					], http::STATUS_NOT_FOUND);
-				}
-			}
-
 			// admin is unconditionally allowed to impersonate
 			if ($this->groupManager->isAdmin($currentUser->getUID())) {
 				return $this->impersonateUser($impersonator, $target, $user);

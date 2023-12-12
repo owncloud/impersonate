@@ -12,7 +12,10 @@ As a security measure, the application lets ownCloud administrators restrict the
 </description>
 	<licence>AGPL</licence>
 	<author>Jörn Friedrich Dreyer, Sujith Haridasan</author>
-	<version>0.5.2</version>
+	<version>0.5.4</version>
+        <types>
+	       <authentication/>
+        </types>
 	<namespace>Impersonate</namespace>
 	<documentation>
 	<admin>https://doc.owncloud.com/server/latest/admin_manual/configuration/general_topics/impersonate_users.html</admin>
