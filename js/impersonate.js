@@ -53,6 +53,14 @@
 					$tr.find('.impersonateDisabled').remove();
 
 					var groupsSelectedByUser = $tr.find('.groups').data('groups');
+					if (!_.isArray(groupsSelectedByUser)) {
+						// We need the gid.
+						// For older OC versions (10.13-), the "groupsSelectedByUser"
+						// is an array containing groups. For newer OC versions (10.13+)
+						// it maps each gid with additional data such as displayname, so
+						// we need to extract the keys of the map
+						groupsSelectedByUser = _.keys(groupsSelectedByUser);
+					}
 
 					if ($tr.data('uid') === $.trim(currentUser)) {
 						removeImpersonateIcon($tr);
