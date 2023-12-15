@@ -2,7 +2,6 @@
     "Can not impersonate. Please contact your server administrator to allow impersonation." : "Kimliğe bürünülemez. Kimliğe bürünmeye izin vermek için lütfen sunucu yöneticinizle iletişime geçin.",
     "Can not impersonate" : "Kimliğe bürünülemiyor",
     "Unexpected error occurred" : "Beklenmedik hata oluştu",
-    "Unexpected error occurred." : "Beklenmedik hata oluştu.",
     "Impersonate" : "Kimliğe Bürünme",
     "Error" : "Hata",
     "Logged in as {currentUser}" : "{currentUser} olarak giriş yapıldı.",
