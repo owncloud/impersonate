@@ -4,6 +4,17 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
+## [Unreleased] - xxxx-xx-xx
+
+## [0.6.0] - 2023-12-14
+
+### Added
+- [#238](https://github.com/owncloud/impersonate/pull/238) - feature:remove enable only for specific groups
+
+### Fixed
+- [#236](https://github.com/owncloud/impersonate/pull/236) - fix: group admins can impersonate again
+
+
 ## [0.5.3] - 2023-07-27
 
 ### Changed
@@ -131,7 +142,8 @@ owncloud-impersonate (0.0.2)
 owncloud-impersonate (0.0.1)
 * First release
 
-[Unreleased]: https://github.com/owncloud/impersonate/compare/v0.5.3...master
+[Unreleased]: https://github.com/owncloud/impersonate/compare/v0.6.0...master
+[0.6.0]: https://github.com/owncloud/impersonate/compare/v0.5.3...v0.6.0
 [0.5.3]: https://github.com/owncloud/impersonate/compare/v0.5.2...v0.5.3
 [0.5.2]: https://github.com/owncloud/impersonate/compare/v0.5.1...v0.5.2
 [0.5.1]: https://github.com/owncloud/impersonate/compare/v0.5.0...v0.5.1
