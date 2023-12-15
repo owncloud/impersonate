@@ -4,7 +4,6 @@ OC.L10N.register(
     "Can not impersonate. Please contact your server administrator to allow impersonation." : "Não pode representar. Entre em contato com o administrador do servidor para permitir a representação.",
     "Can not impersonate" : "Não pode personificar",
     "Unexpected error occurred" : "Ocorreu um erro inesperado",
-    "Unexpected error occurred." : "Ocorreu um erro inesperado.",
     "Impersonate" : "Personificar",
     "Error" : "Erro",
     "Logged in as {currentUser}" : "Conectado como {currentUser}",

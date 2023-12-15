@@ -2,7 +2,6 @@
     "Can not impersonate. Please contact your server administrator to allow impersonation." : "Kann den Benutzer nicht imitieren. Bitte kontaktieren sie den Server Administrator um die Imitation zu erlauben.",
     "Can not impersonate" : "Benutzer Imitation fehlgeschlagen",
     "Unexpected error occurred" : "Ein unerwarteter Fehler ist aufgetreten",
-    "Unexpected error occurred." : "Ein unerwarteter Fehler ist aufgetreten.",
     "Impersonate" : "Als imitierter Benutzer ausgeben",
     "Error" : "Fehler",
     "Logged in as {currentUser}" : "Eingeloggt als {currentUser}",

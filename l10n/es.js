@@ -4,7 +4,6 @@ OC.L10N.register(
     "Can not impersonate. Please contact your server administrator to allow impersonation." : "No se pudo impersonar. Por favor, contacte con el administrador de su servidor para permitir impersonación.",
     "Can not impersonate" : "No se puede suplantar",
     "Unexpected error occurred" : "Sucedió un error inesperado",
-    "Unexpected error occurred." : "Sucedió un error inesperado.",
     "Impersonate" : "Suplantar",
     "Error" : "Error",
     "Logged in as {currentUser}" : "Conectado como {currentUser}",
