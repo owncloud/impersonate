@@ -128,7 +128,6 @@ def main(ctx):
         afterCoverageTests = afterCoveragePipelines(ctx)
         dependsOn(coverageTests, afterCoverageTests)
 
-    dependsOn(afterCoverageTests + nonCoverageTests + stages)
 
     return before + coverageTests + afterCoverageTests + nonCoverageTests + stages
 
