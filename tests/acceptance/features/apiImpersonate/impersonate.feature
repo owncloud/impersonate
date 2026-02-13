@@ -51,7 +51,6 @@ Feature: Impersonate
     When "Harry" sends a request to impersonate user "John"
     Then the HTTP status code should be "404"
 
-  @issue-219
   Scenario Outline: User in a group tries to impersonate other user of same group
     Given "<impersonate-setting>" option in impersonate settings has been set to "<value>"
     When "Alice" sends a request to impersonate user "John"
@@ -59,12 +58,9 @@ Feature: Impersonate
     Examples:
       | impersonate-setting                  | value  | status-code |
       | allow only an admin                  |        | 404         |
-      | allow all group admins               |        | 200         |
-      #Uncomment the below line and remove above line when issue-219 is fixed
-      #| allow all group admins               |        |404|
+      | allow all group admins               |        | 404         |
       | only group admins of specific groups | group1 | 404         |
 
-  @issue-219
   Scenario Outline: User in a group tries to impersonate group admins of the same group
     Given "<impersonate-setting>" option in impersonate settings has been set to "<value>"
     When "Alice" sends a request to impersonate user "Bob"
@@ -72,7 +68,5 @@ Feature: Impersonate
     Examples:
       | impersonate-setting                  | value  | status-code |
       | allow only an admin                  |        | 404         |
-      | allow all group admins               |        | 200         |
-      #Uncomment the below line and remove above line when issue-219 is fixed
-      #| allow all group admins               |        |404|
+      | allow all group admins               |        | 404         |
       | only group admins of specific groups | group1 | 404         |

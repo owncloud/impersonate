@@ -587,6 +587,7 @@ class SettingsControllerTest extends TestCase {
 			->willReturn($user);
 
 		$targetUser = $this->createMock(IUser::class);
+		$targetUser->method('getUID')->willReturn('baro');
 		$targetUser->method('getLastLogin')
 			->willReturn(1);
 
@@ -595,6 +596,19 @@ class SettingsControllerTest extends TestCase {
 
 		$this->groupManger->method('isAdmin')
 			->willReturn(false);
+
+		$group1 = $this->createMock(IGroup::class);
+		$group1->method('getGID')->willReturn('group1');
+		$group2 = $this->createMock(IGroup::class);
+		$group2->method('getGID')->willReturn('group2');
+		$this->subAdmin->method('getSubAdminsGroups')
+			->with($this->equalTo($user))
+			->willReturn([$group1, $group2]);
+
+		$this->groupManger->method('isInGroup')->willReturnMap([
+			['baro', 'group1', true],
+			['baro', 'group2', false],
+		]);
 
 		$this->config
 			->method('getValue')
@@ -657,7 +671,15 @@ class SettingsControllerTest extends TestCase {
 			->method('get')
 			->with($query)
 			->willReturn($user);
-	
+
+		$group1 = $this->createMock(IGroup::class);
+		$group1->method('getGID')->willReturn('group1');
+		$group2 = $this->createMock(IGroup::class);
+		$group2->method('getGID')->willReturn('group2');
+		$this->subAdmin->method('getSubAdminsGroups')
+			->with($this->equalTo($user))
+			->willReturn([$group1, $group2]);
+
 		$this->groupManger->expects($this->any())
 			->method('isAdmin')
 			->willReturn(false);
@@ -666,6 +688,8 @@ class SettingsControllerTest extends TestCase {
 			->method('isInGroup')
 			->will($this->returnValueMap([
 				[$query, $group, true],
+				[$uid, 'group1', true],
+				[$uid, 'group2', false],
 			]));
 
 		$this->session->expects($this->never())
