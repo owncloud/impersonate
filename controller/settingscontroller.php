@@ -203,14 +203,27 @@ class SettingsController extends Controller {
 			], http::STATUS_NOT_FOUND);
 		} else {
 			// admin is unconditionally allowed to impersonate
-			if ($this->groupManager->isAdmin($currentUser->getUID())) {
+			if ($this->groupManager->isAdmin($impersonator)) {
 				return $this->impersonateUser($impersonator, $target, $user);
 			}
 			
 			$includedGroups = $this->config->getValue('impersonate', 'impersonate_include_groups_list', '');
 			$allowSubAdminsImpersonate = $this->config->getValue('impersonate', 'impersonate_all_groupadmins', "false");
 			if ($allowSubAdminsImpersonate === "true") {
-				return $this->impersonateUser($impersonator, $target, $user);
+				$subadminGroups = $this->subAdmin->getSubAdminsGroups($currentUser);
+				foreach ($subadminGroups as $subadminGroup) {
+					if ($this->groupManager->isInGroup($user->getUID(), $subadminGroup->getGID())) {
+						return $this->impersonateUser($impersonator, $target, $user);
+					}
+				}
+				// either the $currentUser isn't a subadmin (no subadmin groups) or the
+				// target user isn't member of any of the subadmin groups, so return an error
+				$this->logger->warning("Can not allow user \"{$impersonator}\" trying to impersonate \"{$target}\" because \"{$target}\" isn't visible to \"{$impersonator}\"");
+				$this->session->remove('impersonator');
+				return new JSONResponse([
+					'error' => 'cannotImpersonate',
+					'message' => $this->l->t('Can not impersonate'),
+				], http::STATUS_NOT_FOUND);
 			} elseif ($includedGroups !== '') {
 				$includedGroups = \json_decode($includedGroups);
 
