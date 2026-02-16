@@ -5,15 +5,20 @@ on:
         description: 'Name of the app'
         required: true
         type: string
-      php-version:
-        description: 'PHP version to test against'
+      php-versions:
+        description: JSON array of PHP versions
         required: true
         type: string
 
 jobs:
-  lint-php-codestyle:
+  php-codestyle:
     name: PHP Code Style
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: true
+      matrix:
+        php: ${{ fromJSON(inputs.php-versions) }}
+
     steps:
       - name: Clone owncloud/core
         uses: actions/checkout@v4
@@ -28,10 +33,9 @@ jobs:
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: ${{ inputs.php-version }}
+          php-version: ${{ matrix.php-version }}
           extensions: curl, gd, json, xml, zip
           ini-values: "memory_limit=1024M"
-          tools: phpstan, codesniffer
 
       - name: Install Composer dependencies
         run: |

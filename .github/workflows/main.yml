@@ -18,19 +18,14 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  lint-and-code-style:
-    name: Lint and Code Style
-    uses: ./.github/workflows/lint-and-codestyle.yml
-    strategy:
-      fail-fast: false
-      matrix:
-        php-version: ["7.4"]
+  php-code-style:
+    name: PHP Code Style
+    uses: ./.github/workflows/php-codestyle.yml
     with:
       app-name: impersonate
-      php-version: ${{ matrix.php-version }}
-
+      php-versions: '["8.1", "8.2", "8.3"]'
 
   semantic-git-messages:
-    name: Semantic Git Messages
-    uses: owncloud/reusable-workflows/.github/workflows/semantic-git-message.yml@main
+    name: Commits
+    uses: owncloud/reusable-workflows/.github/workflows/semantic-git-message.yml@work/semantic
 
