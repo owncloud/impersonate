@@ -18,6 +18,10 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  semantic-git-messages:
+    name: Commits
+    uses: owncloud/reusable-workflows/.github/workflows/semantic-git-message.yml@work/semantic
+
   php-code-style:
     name: PHP Code Style
     uses: ./.github/workflows/php-codestyle.yml
@@ -25,7 +29,10 @@ jobs:
       app-name: impersonate
       php-versions: '["7.4"]'
 
-  semantic-git-messages:
-    name: Commits
-    uses: owncloud/reusable-workflows/.github/workflows/semantic-git-message.yml@work/semantic
+  php-unit:
+    name: PHP Unit
+    uses: ./.github/workflows/php-unit.yml
+    with:
+      app-name: impersonate
+      php-versions: '["7.4"]'
 

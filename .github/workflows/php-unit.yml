@@ -1,0 +1,57 @@
+on:
+  workflow_call:
+    inputs:
+      app-name:
+        description: 'Name of the app'
+        required: true
+        type: string
+      php-versions:
+        description: JSON array of PHP versions
+        required: true
+        type: string
+
+jobs:
+  php-unit:
+    name: PHP Unit
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: true
+      matrix:
+        php: ${{ fromJSON(inputs.php-versions) }}
+
+    steps:
+      - name: Clone owncloud/core
+        uses: actions/checkout@v4
+        with:
+          repository: owncloud/core
+
+      - name: Checkout apps/${{ inputs.app-name }}
+        uses: actions/checkout@v4
+        with:
+          path: apps/${{ inputs.app-name }}
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          extensions: curl, gd, json, xml, zip
+          ini-values: "memory_limit=1024M"
+
+      - name: Install Composer dependencies
+        run: |
+          make install-composer-deps
+          make vendor-bin-deps
+
+      - name: Install Server
+        run: |
+          DATA_DIRECTORY=$(pwd)/data bash tests/drone/install-server.sh
+
+      - name: Setup App
+        run: |
+          php occ a:e ${{ inputs.app-name }}
+
+      - name: Run PHPUnit
+        run: |
+          cd apps/${{ inputs.app-name }}
+          make test-php-unit
+
