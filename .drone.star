@@ -53,17 +53,7 @@ config = {
     "branches": [
         "master",
     ],
-    "codestyle": True,
     "javascript": False,
-    "phpstan": True,
-    "phan": {
-        "multipleVersions": {
-            "phpVersions": [
-                DEFAULT_PHP_VERSION,
-                "7.3",
-            ],
-        },
-    },
     "phpunit": True,
     "acceptance": {
         "webUI": {
@@ -131,7 +121,7 @@ def main(ctx):
     return before + coverageTests + afterCoverageTests + nonCoverageTests + stages
 
 def beforePipelines(ctx):
-    return validateDailyTarballBuild() + codestyle(ctx) + jscodestyle(ctx) + phpstan(ctx) + phan(ctx) + phplint(ctx) + checkStarlark()
+    return validateDailyTarballBuild() + jscodestyle(ctx) + phplint(ctx) + checkStarlark()
 
 def coveragePipelines(ctx):
     # All unit test pipelines that have coverage or other test analysis reported
@@ -165,76 +155,6 @@ def afterCoveragePipelines(ctx):
     return [
         sonarAnalysis(ctx),
     ]
-
-def codestyle(ctx):
-    pipelines = []
-
-    if "codestyle" not in config:
-        return pipelines
-
-    default = {
-        "phpVersions": [DEFAULT_PHP_VERSION],
-    }
-
-    if "defaults" in config:
-        if "codestyle" in config["defaults"]:
-            for item in config["defaults"]["codestyle"]:
-                default[item] = config["defaults"]["codestyle"][item]
-
-    codestyleConfig = config["codestyle"]
-
-    if type(codestyleConfig) == "bool":
-        if codestyleConfig:
-            # the config has "codestyle" true, so specify an empty dict that will get the defaults
-            codestyleConfig = {}
-        else:
-            return pipelines
-
-    if len(codestyleConfig) == 0:
-        # "codestyle" is an empty dict, so specify a single section that will get the defaults
-        codestyleConfig = {"doDefault": {}}
-
-    for category, matrix in codestyleConfig.items():
-        params = {}
-        for item in default:
-            params[item] = matrix[item] if item in matrix else default[item]
-
-        for phpVersion in params["phpVersions"]:
-            name = "coding-standard-php%s" % phpVersion
-
-            result = {
-                "kind": "pipeline",
-                "type": "docker",
-                "name": name,
-                "workspace": {
-                    "base": dir["base"],
-                    "path": "server/apps/%s" % ctx.repo.name,
-                },
-                "steps": skipIfUnchanged(ctx, "lint") +
-                         [
-                             {
-                                 "name": "coding-standard",
-                                 "image": OC_CI_PHP % phpVersion,
-                                 "commands": [
-                                     "make test-php-style",
-                                 ],
-                             },
-                         ],
-                "depends_on": [],
-                "trigger": {
-                    "ref": [
-                        "refs/pull/**",
-                        "refs/tags/**",
-                    ],
-                },
-            }
-
-            for branch in config["branches"]:
-                result["trigger"]["ref"].append("refs/heads/%s" % branch)
-
-            pipelines.append(result)
-
-    return pipelines
 
 def jscodestyle(ctx):
     pipelines = []
@@ -277,156 +197,6 @@ def jscodestyle(ctx):
         result["trigger"]["ref"].append("refs/heads/%s" % branch)
 
     pipelines.append(result)
-
-    return pipelines
-
-def phpstan(ctx):
-    pipelines = []
-
-    if "phpstan" not in config:
-        return pipelines
-
-    default = {
-        "phpVersions": [DEFAULT_PHP_VERSION],
-        "logLevel": "2",
-        "extraApps": {},
-        "enableApp": True,
-    }
-
-    if "defaults" in config:
-        if "phpstan" in config["defaults"]:
-            for item in config["defaults"]["phpstan"]:
-                default[item] = config["defaults"]["phpstan"][item]
-
-    phpstanConfig = config["phpstan"]
-
-    if type(phpstanConfig) == "bool":
-        if phpstanConfig:
-            # the config has "phpstan" true, so specify an empty dict that will get the defaults
-            phpstanConfig = {}
-        else:
-            return pipelines
-
-    if len(phpstanConfig) == 0:
-        # "phpstan" is an empty dict, so specify a single section that will get the defaults
-        phpstanConfig = {"doDefault": {}}
-
-    for category, matrix in phpstanConfig.items():
-        params = {}
-        for item in default:
-            params[item] = matrix[item] if item in matrix else default[item]
-
-        for phpVersion in params["phpVersions"]:
-            name = "phpstan-php%s" % phpVersion
-
-            result = {
-                "kind": "pipeline",
-                "type": "docker",
-                "name": name,
-                "workspace": {
-                    "base": dir["base"],
-                    "path": "server/apps/%s" % ctx.repo.name,
-                },
-                "steps": skipIfUnchanged(ctx, "lint") +
-                         installCore(ctx, "daily-master-qa", "sqlite", False) +
-                         installAppPhp(ctx, phpVersion) +
-                         installExtraApps(phpVersion, params["extraApps"]) +
-                         setupServerAndApp(ctx, phpVersion, params["logLevel"], False, params["enableApp"]) +
-                         [
-                             {
-                                 "name": "phpstan",
-                                 "image": OC_CI_PHP % phpVersion,
-                                 "commands": [
-                                     "make test-php-phpstan",
-                                 ],
-                             },
-                         ],
-                "depends_on": [],
-                "trigger": {
-                    "ref": [
-                        "refs/pull/**",
-                        "refs/tags/**",
-                    ],
-                },
-            }
-
-            for branch in config["branches"]:
-                result["trigger"]["ref"].append("refs/heads/%s" % branch)
-
-            pipelines.append(result)
-
-    return pipelines
-
-def phan(ctx):
-    pipelines = []
-
-    if "phan" not in config:
-        return pipelines
-
-    default = {
-        "phpVersions": [DEFAULT_PHP_VERSION],
-        "extraApps": {},
-    }
-
-    if "defaults" in config:
-        if "phan" in config["defaults"]:
-            for item in config["defaults"]["phan"]:
-                default[item] = config["defaults"]["phan"][item]
-
-    phanConfig = config["phan"]
-
-    if type(phanConfig) == "bool":
-        if phanConfig:
-            # the config has "phan" true, so specify an empty dict that will get the defaults
-            phanConfig = {}
-        else:
-            return pipelines
-
-    if len(phanConfig) == 0:
-        # "phan" is an empty dict, so specify a single section that will get the defaults
-        phanConfig = {"doDefault": {}}
-
-    for category, matrix in phanConfig.items():
-        params = {}
-        for item in default:
-            params[item] = matrix[item] if item in matrix else default[item]
-
-        for phpVersion in params["phpVersions"]:
-            name = "phan-php%s" % phpVersion
-
-            result = {
-                "kind": "pipeline",
-                "type": "docker",
-                "name": name,
-                "workspace": {
-                    "base": dir["base"],
-                    "path": "server/apps/%s" % ctx.repo.name,
-                },
-                "steps": skipIfUnchanged(ctx, "lint") +
-                         installCore(ctx, "daily-master-qa", "sqlite", False) +
-                         installExtraApps(phpVersion, params["extraApps"], False) +
-                         [
-                             {
-                                 "name": "phan",
-                                 "image": OC_CI_PHP % phpVersion,
-                                 "commands": [
-                                     "make test-php-phan",
-                                 ],
-                             },
-                         ],
-                "depends_on": [],
-                "trigger": {
-                    "ref": [
-                        "refs/pull/**",
-                        "refs/tags/**",
-                    ],
-                },
-            }
-
-            for branch in config["branches"]:
-                result["trigger"]["ref"].append("refs/heads/%s" % branch)
-
-            pipelines.append(result)
 
     return pipelines
 
