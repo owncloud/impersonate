@@ -18,6 +18,26 @@ jobs:
       fail-fast: true
       matrix:
         php: ${{ fromJSON(inputs.php-versions) }}
+        database: [sqlite]
+        include:
+          - php: "7.4"
+            database: "mysql:8.0"
+
+    services:
+      mysql:
+        image: ${{ matrix.database }}
+        env:
+          MYSQL_ROOT_PASSWORD: password
+          MYSQL_DATABASE: owncloud
+        options: >-
+          --health-cmd="mysqladmin ping -u root -ppassword"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=3
+        ports:
+          - 3306:3306
+        # Only start MySQL service if matrix.database is mysql:8.0
+        if: ${{ matrix.database == 'mysql:8.0' }}
 
     steps:
       - name: Clone owncloud/core
@@ -37,14 +57,22 @@ jobs:
           extensions: curl, gd, json, xml, zip
           ini-values: "memory_limit=1024M"
 
+      - name: Wait for MySQL service to be ready
+        if: ${{ matrix.database == 'mysql:8.0' }}
+        run: |
+          timeout 60 bash -c 'until mysqladmin ping -h localhost -u root -ppassword > /dev/null 2>&1; do sleep 1; done'
+
       - name: Install Composer dependencies
         run: |
           make install-composer-deps
           make vendor-bin-deps
 
       - name: Install Server
+        env:
+          DATA_DIRECTORY: ${{ github.workspace }}/data
+          DB_TYPE: ${{ matrix.database }}
         run: |
-          DATA_DIRECTORY=$(pwd)/data bash tests/drone/install-server.sh
+          bash tests/drone/install-server.sh
 
       - name: Setup App
         run: |

@@ -17,6 +17,10 @@ concurrency:
   group: lint-${{ github.ref }}
   cancel-in-progress: true
 
+env:
+  APP_NAME: impersonate
+  PHP_VERSIONS: '["7.4"]'
+
 jobs:
   semantic-git-messages:
     name: Commits
@@ -26,13 +30,13 @@ jobs:
     name: PHP Code Style
     uses: ./.github/workflows/php-codestyle.yml
     with:
-      app-name: impersonate
-      php-versions: '["7.4"]'
+      app-name: ${ env.APP_NAME }
+      php-versions: ${ env.PHP_VERSIONS }
 
   php-unit:
     name: PHP Unit
     uses: ./.github/workflows/php-unit.yml
     with:
-      app-name: impersonate
-      php-versions: '["7.4"]'
+      app-name: ${ env.APP_NAME }
+      php-versions: ${ env.PHP_VERSIONS }
 
