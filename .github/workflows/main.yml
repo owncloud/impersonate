@@ -1,0 +1,36 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    types:
+      - opened
+      - synchronize
+      - reopened
+
+permissions:
+    contents: read
+
+concurrency:
+  group: lint-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  lint-and-code-style:
+    name: Lint and Code Style
+    uses: ./.github/workflows/lint-and-codestyle.yml
+    strategy:
+      fail-fast: false
+      matrix:
+        php-version: ["7.4"]
+    with:
+      app-name: impersonate
+      php-version: ${{ matrix.php-version }}
+
+
+  semantic-git-messages:
+    name: Semantic Git Messages
+    uses: owncloud/reusable-workflows/.github/workflows/semantic-git-message.yml@main
+
