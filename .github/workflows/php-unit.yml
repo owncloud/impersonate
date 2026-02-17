@@ -25,7 +25,7 @@ jobs:
 
     services:
       mysql:
-        image: ${{ matrix.database }}
+        image: ${{ startsWith(matrix.database,'mysql:') && matrix.database || '' }}
         env:
           MYSQL_ROOT_PASSWORD: password
           MYSQL_DATABASE: owncloud
@@ -36,8 +36,6 @@ jobs:
           --health-retries=3
         ports:
           - 3306:3306
-        # Only start MySQL service if matrix.database is mysql:8.0
-        if: ${{ matrix.database == 'mysql:8.0' }}
 
     steps:
       - name: Clone owncloud/core
@@ -58,7 +56,7 @@ jobs:
           ini-values: "memory_limit=1024M"
 
       - name: Wait for MySQL service to be ready
-        if: ${{ matrix.database == 'mysql:8.0' }}
+        if: ${{ startsWith(matrix.database, 'mysql:') }}
         run: |
           timeout 60 bash -c 'until mysqladmin ping -h localhost -u root -ppassword > /dev/null 2>&1; do sleep 1; done'
 

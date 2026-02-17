@@ -11,7 +11,7 @@ on:
       - reopened
 
 permissions:
-    contents: read
+  contents: read
 
 concurrency:
   group: lint-${{ github.ref }}
@@ -22,21 +22,36 @@ env:
   PHP_VERSIONS: '["7.4"]'
 
 jobs:
+  get-vars:
+    runs-on: ubuntu-latest
+    outputs:
+      app-name: ${{ env.APP_NAME }}
+      php-versions: ${{ env.PHP_VERSIONS }}
+    steps:
+      - name: Set variables
+        run: |
+          echo "App name $APP_NAME"
+          echo "PHP versions string: $PHP_VERSIONS"
+
   semantic-git-messages:
     name: Commits
     uses: owncloud/reusable-workflows/.github/workflows/semantic-git-message.yml@work/semantic
 
   php-code-style:
     name: PHP Code Style
+    needs:
+      - get-vars
     uses: ./.github/workflows/php-codestyle.yml
     with:
-      app-name: ${ env.APP_NAME }
-      php-versions: ${ env.PHP_VERSIONS }
+      app-name: ${{ needs.get-vars.outputs.app-name }}
+      php-versions: ${{ needs.get-vars.outputs.php-versions }}
 
   php-unit:
     name: PHP Unit
+    needs:
+      - get-vars
     uses: ./.github/workflows/php-unit.yml
     with:
-      app-name: ${ env.APP_NAME }
-      php-versions: ${ env.PHP_VERSIONS }
+      app-name: ${{ needs.get-vars.outputs.app-name }}
+      php-versions: ${{ needs.get-vars.outputs.php-versions }}
 
