@@ -26,7 +26,6 @@ use OCP\IUser;
 use OCP\IUserManager;
 use OCP\IUserSession;
 use OCP\ISession;
-use OC\Group\Backend;
 use Symfony\Component\EventDispatcher\GenericEvent;
 use Test\TestCase;
 

@@ -25,7 +25,7 @@ use Behat\Behat\Context\Context;
 use Behat\Behat\Hook\Scope\BeforeScenarioScope;
 use Behat\MinkExtension\Context\RawMinkContext;
 use Page\UserImpersonatePage;
-use \Page\OwncloudPage;
+use Page\OwncloudPage;
 use PHPUnit\Framework\Assert;
 
 require_once 'bootstrap.php';
@@ -34,22 +34,9 @@ require_once 'bootstrap.php';
  * WebUI Impersonate context.
  */
 class WebUIImpersonateContext extends RawMinkContext implements Context {
-	/**
-	 *
-	 * @var FeatureContext
-	 */
-	private $featureContext = null;
-
-	/**
-	 *
-	 * @var UserImpersonatePage
-	 */
-	private $userImpersonatePage;
-	/**
-	 *
-	 * @var OwncloudPage
-	 */
-	private $owncloudPage;
+	private ?FeatureContext $featureContext = null;
+	private UserImpersonatePage $userImpersonatePage;
+	private OwncloudPage $owncloudPage;
 
 	/**
 	 * WebUIImpersonateContext constructor.

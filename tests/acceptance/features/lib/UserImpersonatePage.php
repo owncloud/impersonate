@@ -36,9 +36,9 @@ class UserImpersonatePage extends UsersPage {
 	 * @var string $path
 	 */
 	protected $path = '/index.php/settings/users';
-	protected $impersonateXpath = './/a[@class="action permanent impersonate"]';
-	protected $userXpath = '//span[contains(@id,"expandDisplayName") and text()="%s"]';
-	protected $impersonateNotificationXpath = '//div[@id="notification-container"]//div[@id="impersonate-notification"]/a';
+	protected string $impersonateXpath = './/a[@class="action permanent impersonate"]';
+	protected string $userXpath = '//span[contains(@id,"expandDisplayName") and text()="%s"]';
+	protected string $impersonateNotificationXpath = '//div[@id="notification-container"]//div[@id="impersonate-notification"]/a';
 
 	/**
 	 * @param Session $session
