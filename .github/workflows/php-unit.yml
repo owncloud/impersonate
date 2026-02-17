@@ -38,6 +38,15 @@ jobs:
           - 3306:3306
 
     steps:
+      - name: Install wait-for-it
+        run: |
+          mkdir -p $HOME/.local/bin
+          ls -l $HOME/.local/bin
+          curl -SsfL -o $HOME/.local/bin/wait-for "https://github.com/owncloud-ci/wait-for/releases/download/v2.0.7/wait-for-linux-amd64"
+          chmod +x $HOME/.local/bin/wait-for
+          curl -SsfL -o $HOME/.local/bin/wait-for-it "https://raw.githubusercontent.com/owncloud-docker/ubuntu/refs/heads/master/v22.04/overlay/usr/bin/wait-for-it"
+          chmod +x $HOME/.local/bin/wait-for-it
+
       - name: Clone owncloud/core
         uses: actions/checkout@v4
         with:
@@ -65,7 +74,6 @@ jobs:
           DATA_DIRECTORY: ${{ github.workspace }}/data
           DB_TYPE: ${{ startsWith(matrix.database, 'mysql:') && 'mysql' || 'sqlite' }}
         run: |
-          curl -SsfL -o /usr/bin/wait-for-it "https://github.com/owncloud-ci/wait-for/releases/download/v2.0.7/wait-for-linux-amd64"
           bash tests/drone/install-server.sh
 
       - name: Setup App
