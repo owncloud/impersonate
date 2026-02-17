@@ -12,17 +12,14 @@
 
 namespace OCA\Impersonate\Tests\Controller;
 
-use OC\SubAdmin;
 use OCA\Impersonate\Controller\LogoutController;
 use OCP\AppFramework\Http\JSONResponse;
 use OCP\AppFramework\Http;
-use OCP\IGroupManager;
 use OCP\IRequest;
 use OCP\ILogger;
 use OCP\IUser;
 use OCP\IUserManager;
 use OCP\IUserSession;
-use OC\Group\Backend;
 use Symfony\Component\EventDispatcher\GenericEvent;
 use Test\TestCase;
 
@@ -46,7 +43,6 @@ class LogoutControllerTest extends TestCase {
 	private $logger;
 	/** @var ISession  */
 	private $session;
-	private $eventDispatcher;
 	private $tokenProvider;
 	private $util;
 

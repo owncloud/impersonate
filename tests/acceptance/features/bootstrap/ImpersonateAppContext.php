@@ -34,20 +34,8 @@ require_once 'bootstrap.php';
  * Context for Impersonate app
  */
 class ImpersonateAppContext implements Context {
-	/**
-	 * @var FeatureContext
-	 */
-	private $featureContext;
-
-	/**
-	 * @var OccUsersGroupsContext
-	 */
-	private $occUsersGroupsContext;
-
-	/**
-	 * @var int
-	 */
-	private $impersonateResponseCode;
+	private FeatureContext $featureContext;
+	private int $impersonateResponseCode;
 
 	/**
 	 * Returns base url for the impersonate app
@@ -71,6 +59,7 @@ class ImpersonateAppContext implements Context {
 	 * Get the commands to obtain desired configuration
 	 *
 	 * @param string $option
+	 * @param string|null $value
 	 * @return array
 	 * @throws Exception
 	 */
@@ -189,11 +178,6 @@ class ImpersonateAppContext implements Context {
 			$userName = $this->featureContext->getActualUsername($requester);
 			$password = $this->featureContext->getActualPassword($requester);
 		}
-		$response = null;
-		$client = new Client([
-			'auth' => [$userName, $password],
-		]);
-		$response = null;
 		try {
 			$response= HttpRequestHelper::post($this->featureContext->getBaseUrl().$this->getImpersonateUrl(), '', $userName, $password, null, $requestData);
 		} catch (Exception $e) {
