@@ -55,11 +55,6 @@ jobs:
           extensions: curl, gd, json, xml, zip
           ini-values: "memory_limit=1024M"
 
-      - name: Wait for MySQL service to be ready
-        if: ${{ startsWith(matrix.database, 'mysql:') }}
-        run: |
-          timeout 60 bash -c 'until mysqladmin ping -h localhost -u root -ppassword > /dev/null 2>&1; do sleep 1; done'
-
       - name: Install Composer dependencies
         run: |
           make install-composer-deps
