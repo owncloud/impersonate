@@ -63,7 +63,7 @@ jobs:
       - name: Install Server
         env:
           DATA_DIRECTORY: ${{ github.workspace }}/data
-          DB_TYPE: ${{ matrix.database }}
+          DB_TYPE: ${{ startsWith(matrix.database, 'mysql:') && 'mysql' || 'sqlite' }}
         run: |
           bash tests/drone/install-server.sh
 

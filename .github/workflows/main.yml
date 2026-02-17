@@ -35,7 +35,7 @@ jobs:
 
   semantic-git-messages:
     name: Commits
-    uses: owncloud/reusable-workflows/.github/workflows/semantic-git-message.yml@work/semantic
+    uses: owncloud/reusable-workflows/.github/workflows/semantic-git-message.yml@main
 
   php-code-style:
     name: PHP Code Style
