@@ -65,6 +65,7 @@ jobs:
           DATA_DIRECTORY: ${{ github.workspace }}/data
           DB_TYPE: ${{ startsWith(matrix.database, 'mysql:') && 'mysql' || 'sqlite' }}
         run: |
+          curl -SsfL -o /usr/bin/wait-for-it "https://github.com/owncloud-ci/wait-for/releases/download/v2.0.7/wait-for-linux-amd64"
           bash tests/drone/install-server.sh
 
       - name: Setup App
