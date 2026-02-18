@@ -22,6 +22,8 @@ jobs:
         include:
           - php: "7.4"
             database: "mysql:8.0"
+          - php: "7.4"
+            database: "postgres:10.21"
 
     services:
       mysql:
@@ -38,6 +40,14 @@ jobs:
           --health-retries=3
         ports:
           - 3306:3306
+      postgres:
+        image: ${{ startsWith(matrix.database,'postgres:') && matrix.database || '' }}
+        env:
+          POSTGRES_DB: owncloud
+          POSTGRES_USER: owncloud
+          POSTGRES_PASSWORD: owncloud
+        ports:
+          - 5432:5432
 
     steps:
       - name: Clone owncloud/core
@@ -65,7 +75,7 @@ jobs:
       - name: Install Server
         env:
           DATA_DIRECTORY: ${{ github.workspace }}/data
-          DB: ${{ startsWith(matrix.database, 'mysql:') && 'mysql' || 'sqlite' }}
+          DB: ${{ matrix.database }}
           DB_NAME: owncloud
           ADMIN_LOGIN: admin
           ADMIN_PASSWORD: admin
@@ -74,8 +84,10 @@ jobs:
           DB_PASSWORD: owncloud
 
         run: |
+          DB_TYPE=${DB%:*}
+          if [ $DB_TYPE == "postgres" ] ; then DB_TYPE="pgsql"; fi
           install_cmd="maintenance:install -vvv \
-            --database=${DB} \
+            --database=${DB_TYPE} \
             --database-name=${DB_NAME} \
             --admin-user=${ADMIN_LOGIN} \
             --admin-pass=${ADMIN_PASSWORD} \
