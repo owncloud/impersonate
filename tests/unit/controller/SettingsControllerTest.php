@@ -110,8 +110,7 @@ class SettingsControllerTest extends TestCase {
 			$this->session,
 			$this->config,
 			$this->l,
-			$this->defaultTokenProvider,
-			$this->util
+			$this->defaultTokenProvider
 		);
 
 		parent::setUp();
@@ -144,10 +143,12 @@ class SettingsControllerTest extends TestCase {
 			['NormalUser', 'username', 'normaluser']
 		];
 	}
+
 	/**
 	 * @dataProvider usersProvider
 	 * @param $query
 	 * @param $uid
+	 * @param $group
 	 */
 	public function testImpersonate($query, $uid, $group) {
 		$user = $this->createMock('\OCP\IUser');
@@ -544,7 +545,7 @@ class SettingsControllerTest extends TestCase {
 				new JSONResponse([
 					$includedGroups, $enabled, $allowAllSubadminGroups, false, false
 				]),
-				$this->controller->getDataForImpersonateApp('test')
+				$this->controller->getDataForImpersonateApp()
 			);
 		} else {
 			$user->expects($this->once())
@@ -560,7 +561,7 @@ class SettingsControllerTest extends TestCase {
 				new JSONResponse([
 					$includedGroups, $enabled, $allowAllSubadminGroups, $isAdmin, $isSubAdmin
 				]),
-				$this->controller->getDataForImpersonateApp('test')
+				$this->controller->getDataForImpersonateApp()
 			);
 		}
 	}
