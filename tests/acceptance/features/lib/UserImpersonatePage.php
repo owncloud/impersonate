@@ -65,7 +65,7 @@ class UserImpersonatePage extends UsersPage {
 	 * @throws Exception
 	 */
 	public function userShouldBeInTheirPage(string $username): bool {
-		$userFieldElement = $this->waitTillXpathIsVisible(sprintf($this->userXpath, $username));
+		$userFieldElement = $this->waitTillXpathIsVisible(\sprintf($this->userXpath, $username));
 		if ($userFieldElement && $userFieldElement->isVisible()) {
 			return true;
 		} else {
