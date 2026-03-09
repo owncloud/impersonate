@@ -54,7 +54,7 @@ config = {
         "master",
     ],
     "javascript": False,
-    "phpunit": True,
+    "phpunit": False,
     "acceptance": {
         "webUI": {
             "suites": [

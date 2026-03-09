@@ -14,12 +14,12 @@ permissions:
   contents: read
 
 concurrency:
-  group: lint-${{ github.ref }}
+  group: ci-${{ github.ref }}
   cancel-in-progress: true
 
 env:
   APP_NAME: impersonate
-  PHP_VERSIONS: '["7.4"]'
+  PHP_VERSIONS: '["8.3"]'
 
 jobs:
   get-vars:
