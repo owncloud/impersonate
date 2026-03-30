@@ -53,6 +53,11 @@ dist: build-dep js-templates build-src
 %.js: $(template_src)
 		$(HANDLEBARS) -n "$(js_namespace)" $* -f $@
 
+# Installs dependencies and does any build actions needed for the app to run in CI
+.PHONY: ci
+ci: vendor build-dep js-templates
+	@echo dependencies and build actions for CI are completed
+
 .PHONY: build-dep
 build-dep: ## fetch all dependencies
 build-dep: node_modules
