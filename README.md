@@ -1,3 +1,6 @@
+> **⚠️ This repository is archived and no longer maintained.**
+> It is read-only and will not receive further updates or contributions.
+
 # Impersonate
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=owncloud_impersonate&metric=alert_status)](https://sonarcloud.io/dashboard?id=owncloud_impersonate)
 [![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=owncloud_impersonate&metric=security_rating)](https://sonarcloud.io/dashboard?id=owncloud_impersonate)
